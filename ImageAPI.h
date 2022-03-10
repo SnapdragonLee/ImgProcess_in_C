@@ -193,9 +193,9 @@ void bmpDataPart(FILE *fpbmp) {
             b[height - 1 - j][i] = pix[i * 3];
 
 
-            output_r[height - 1 - j][i] = 255;
-            output_g[height - 1 - j][i] = 255;
-            output_b[height - 1 - j][i] = 255;
+            output_r[height - 1 - j][i] = r[height - 1 - j][i];   // 255
+            output_g[height - 1 - j][i] = g[height - 1 - j][i];   // 255
+            output_b[height - 1 - j][i] = b[height - 1 - j][i];   // 255
         }
 
     }
@@ -1103,12 +1103,11 @@ void Initialization() {
 
 }
 
-//改写文件流
 FILE *openfile(char filename[]) {
     FILE *fpbmp;
     fpbmp = fopen(filename, "rb");
     if (fpbmp == NULL) {
-        printf("Open bmp failed!!!\n");
+        printf("Open failed! No file named %s\n", filename);
         exit(1);
     }
 
