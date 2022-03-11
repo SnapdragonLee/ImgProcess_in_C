@@ -5,26 +5,26 @@ int main(int argc, char *argv[]) {
     /* Open bmp file */
     unsigned char *fp_temp;
 
-    FILE *fpbmp;
-    FILE *fpout;
+    FILE *bmpin;
+    FILE *bmpout;
     Initialization();
 
 //===============first picture -- Bilateral Filter==========
 
     /*Standerd operations for file i/o*/
-    fpbmp = openfile(SourceFile);
-    bmpDataPart(fpbmp);
+    bmpin = openfile(SourceFile);
+    bmpDataPart(bmpin);
 
-    fpout = writefile(OutputFile1);
-    addHeadertofile(fpbmp, fpout);
+    bmpout = writefile(OutputFile1);
+    addHeadertofile(bmpin, bmpout);
 
     /*your operations for your picture*/
 
-    bmpoutput(fpout);
+    bmpoutput(bmpout);
 
     /*Standerd operations for close*/
-    fclose(fpbmp);
-    fclose(fpout);
+    fclose(bmpin);
+    fclose(bmpout);
 
     return 0;
 }

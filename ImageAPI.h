@@ -31,12 +31,12 @@ void ChangeTheLuminance();
 
 #define SourceFile "../lena2.bmp"
 #define OutputFile1 "../lena2-output.bmp"
-#define OutputFile2 "C:\\Users\\Administrator\\Desktop\\air2.bmp"
-#define OutputFile3 "C:\\Users\\Administrator\\Desktop\\air3.bmp"
-#define OutputFile4 "C:\\Users\\Administrator\\Desktop\\air4.bmp"
-#define OutputFile5 "C:\\Users\\Administrator\\Desktop\\air5.bmp"
-#define OutputFile6 "C:\\Users\\Administrator\\Desktop\\air6.bmp"
-#define OutputFile7 "C:\\Users\\Administrator\\Desktop\\air7.bmp"
+// #define OutputFile2 "C:\\Users\\Administrator\\Desktop\\air2.bmp"
+// #define OutputFile3 "C:\\Users\\Administrator\\Desktop\\air3.bmp"
+// #define OutputFile4 "C:\\Users\\Administrator\\Desktop\\air4.bmp"
+// #define OutputFile5 "C:\\Users\\Administrator\\Desktop\\air5.bmp"
+// #define OutputFile6 "C:\\Users\\Administrator\\Desktop\\air6.bmp"
+// #define OutputFile7 "C:\\Users\\Administrator\\Desktop\\air7.bmp"
 //================My file 1 end=============//
 
 //================My file 2 start=============//
