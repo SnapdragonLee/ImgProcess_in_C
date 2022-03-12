@@ -1,30 +1,39 @@
 #include <stdio.h>
 #include "ImageAPI.h"
 
+#define SourceFile "../lena2.bmp"
+#define OutputFile1 "../lena2-output.bmp"
+// #define OutputFile2 "C:\\Users\\Administrator\\Desktop\\air2.bmp"
+// #define OutputFile3 "C:\\Users\\Administrator\\Desktop\\air3.bmp"
+// #define OutputFile4 "C:\\Users\\Administrator\\Desktop\\air4.bmp"
+// #define OutputFile5 "C:\\Users\\Administrator\\Desktop\\air5.bmp"
+// #define OutputFile6 "C:\\Users\\Administrator\\Desktop\\air6.bmp"
+// #define OutputFile7 "C:\\Users\\Administrator\\Desktop\\air7.bmp"
+
 int main(int argc, char *argv[]) {
-    /* Open bmp file */
-    unsigned char *fp_temp;
+    FILE *bmpIn = fopen(SourceFile, "rb");
 
-    FILE *bmpin;
-    FILE *bmpout;
-    Initialization();
+    if (bmpIn == NULL) {
+        printf("Open failed! No file named %s\n", SourceFile);
+        exit(1);
+    }
 
-//===============first picture -- Bilateral Filter==========
+    FILE *bmpOut;
+    // Initialization();
 
     /*Standerd operations for file i/o*/
-    bmpin = openfile(SourceFile);
-    bmpDataPart(bmpin);
+    openfile(bmpIn);
+    bmpDataPart(bmpIn);
 
-    bmpout = writefile(OutputFile1);
-    addHeadertofile(bmpin, bmpout);
+    bmpOut = writefile(OutputFile1);
+    addHeadertofile(bmpIn, bmpOut);
 
-    /*your operations for your picture*/
+    /* Operations */
 
-    bmpoutput(bmpout);
+    bmpoutput(bmpOut);
 
-    /*Standerd operations for close*/
-    fclose(bmpin);
-    fclose(bmpout);
+    fclose(bmpIn);
+    fclose(bmpOut);
 
     return 0;
 }
