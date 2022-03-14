@@ -20,6 +20,7 @@ unsigned char records[MAXSIZE][MAXSIZE];
 
 bmpFileHeader bmpFHeader;
 bmpInfoHeader bmpIHeader;
+bmpPixelInfo bmpPx;
 
 FILE *writefile(char filename[]) {
     FILE *fpout;
@@ -83,29 +84,35 @@ void bmpDataPart(FILE *fpbmp) {
     }
 }
 
-void bmpFHeaderRead(FILE *fpbmp) {
+void bmpFHeaderRead(FILE *bmpIn) {
+    /*printf("bmpFHeader size %llu", sizeof(bmpFHeader));*/
 
-    //fread(&bmpFHeader, sizeof(bmpFileHeader), 1, fpbmp);
+    fread(&bmpFHeader, 14, 1, bmpIn);
 
-    fread(&bmpFHeader.bFType, 2, 1, fpbmp);
     if (bmpFHeader.bFType != BM) {
         printf("Not BMP file! Please retry by using other file\n");
         exit(1);
     }
-    fread(&bmpFHeader.bFSize, 4, 1, fpbmp);
-    printf("File size is %u", bmpFHeader.bFSize);
 
-    fread(0,4,1,fpbmp);
-    fread(&bmpFHeader.bFOffBits, 4, 1, fpbmp);
-    printf("F");
+    bmpFHeader.bFSize = (((int) bmpFHeader.bFSize_2) << 16) + bmpFHeader.bFSize_1;
+    printf("File size is %u Bytes\n", bmpFHeader.bFSize);
+
+    if (bmpFHeader.bFReserved1 != 0 || bmpFHeader.bFReserved2 != 0) {
+        printf("File Format error! Please retry by using other file\n");
+        exit(2);
+    }
+
+    bmpFHeader.bFOffBits = (((int) bmpFHeader.bFOffBits_2) << 16) + bmpFHeader.bFOffBits_1;
+    printf("The Header Part is %u Bytes\n", bmpFHeader.bFOffBits);
 }
 
 
 /* To get the OffSet of header to data part */
-void bmpIHeaderRead(FILE *fpbmp) {
-    fseek(fpbmp, 10L, SEEK_SET);
-    fread(&OffSet, sizeof(char), 4, fpbmp);
-    printf("The Header Part is of length %d.\n", OffSet);
+void bmpIHeaderRead(FILE *bmpIn) {
+    /*printf("bmpInfoHeader size %llu\n", sizeof(bmpInfoHeader));*/
+
+    fread(&bmpIHeader, 40, 1, bmpIn);
+
 }
 
 
@@ -990,7 +997,7 @@ void Initialization() {
     }
 }
 
-void readfile(FILE * bmpFileIn) {
+void readfile(FILE *bmpFileIn) {
 
     bmpFHeaderRead(bmpFileIn);
     bmpIHeaderRead(bmpFileIn);
