@@ -4,7 +4,7 @@ project(ImgProcess_in_C C)
 
 set(CMAKE_C_STANDARD 17)
 
-add_executable(ImgProcess_in_C main.c ImageAPI.h bmpFile_IO.h ImagAPI.c)
+add_executable(ImgProcess_in_C main.c ProcessAPI.h bmpFile_IO.h ProcessAPI.c)
 
 IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
     set(CURRENT_SYSTEM Linux)

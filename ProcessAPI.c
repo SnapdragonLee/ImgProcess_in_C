@@ -2,7 +2,7 @@
 // Created by snapdragon_manjaro21 on 2022/3/12.
 //
 
-#include "ImageAPI.h"
+#include "ProcessAPI.h"
 
 unsigned char Y[MAXSIZE][MAXSIZE], output_Y[MAXSIZE][MAXSIZE];
 unsigned char U[MAXSIZE][MAXSIZE], output_U[MAXSIZE][MAXSIZE];
@@ -18,11 +18,14 @@ unsigned char g[MAXSIZE][MAXSIZE], output_g[MAXSIZE][MAXSIZE];
 unsigned char b[MAXSIZE][MAXSIZE], output_b[MAXSIZE][MAXSIZE];
 unsigned char records[MAXSIZE][MAXSIZE];
 
+bmpFileHeader bmpFHeader;
+bmpInfoHeader bmpIHeader;
+
 FILE *writefile(char filename[]) {
     FILE *fpout;
     fpout = fopen(filename, "wb+");
     if (fpout == NULL) {
-        printf("Open out.bmp failed!!!\n");
+        printf("Output filename \"%s\" cannot open!\n", filename);
         exit(1);
     }
     fseek(fpout, 0L, SEEK_SET);
@@ -80,20 +83,26 @@ void bmpDataPart(FILE *fpbmp) {
     }
 }
 
-void bmpFileTest(FILE *fpbmp) {
-    unsigned short bfType;
+void bmpFHeaderRead(FILE *fpbmp) {
 
-    fseek(fpbmp, 0L, SEEK_SET);//seek_set 起始位置
-    fread(&bfType, sizeof(char), 2, fpbmp);
-    if (BM != bfType) {
-        printf("This file is not bmp file.!!!\n");
+    //fread(&bmpFHeader, sizeof(bmpFileHeader), 1, fpbmp);
+
+    fread(&bmpFHeader.bFType, 2, 1, fpbmp);
+    if (bmpFHeader.bFType != BM) {
+        printf("Not BMP file! Please retry by using other file\n");
         exit(1);
     }
+    fread(&bmpFHeader.bFSize, 4, 1, fpbmp);
+    printf("File size is %u", bmpFHeader.bFSize);
+
+    fread(0,4,1,fpbmp);
+    fread(&bmpFHeader.bFOffBits, 4, 1, fpbmp);
+    printf("F");
 }
 
 
 /* To get the OffSet of header to data part */
-void bmpHeaderPartLength(FILE *fpbmp) {
+void bmpIHeaderRead(FILE *fpbmp) {
     fseek(fpbmp, 10L, SEEK_SET);
     fread(&OffSet, sizeof(char), 4, fpbmp);
     printf("The Header Part is of length %d.\n", OffSet);
@@ -979,13 +988,12 @@ void Initialization() {
             records[j][i] = 0;
         }
     }
-
 }
 
-void openfile(FILE * bmpFileIn) {
+void readfile(FILE * bmpFileIn) {
 
-    bmpFileTest(bmpFileIn);
-    bmpHeaderPartLength(bmpFileIn);
+    bmpFHeaderRead(bmpFileIn);
+    bmpIHeaderRead(bmpFileIn);
     BmpWidthHeight(bmpFileIn);
 
     fseek(bmpFileIn, 0L, SEEK_SET);
