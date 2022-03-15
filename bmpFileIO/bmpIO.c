@@ -99,6 +99,17 @@ void bmpDataPart(FILE *bmpData) {
     }
 }
 
+void writeFile(FILE *bmpFileOut) {
+    addHeader(bmpFileOut);
+
+    bmpOutput(bmpFileOut);
+}
+
+
+void addHeader(FILE *bmpFileOut) {
+    fwrite(&bmpFHeader, BmpFHeaderLen, 1, bmpFileOut);//输出头文件
+    fwrite(&bmpIHeader, BmpIHeaderLen, 1, bmpFileOut);
+}
 
 void bmpOutput(FILE *bmpFileOut) {
     long i, j = 0;
@@ -118,16 +129,4 @@ void bmpOutput(FILE *bmpFileOut) {
         fwrite(pixout, 1, stride, bmpFileOut);
 
     }
-}
-
-void addHeader(FILE *bmpFileOut) {
-    fwrite(&bmpFHeader, BmpFHeaderLen, 1, bmpFileOut);//输出头文件
-    fwrite(&bmpIHeader, BmpIHeaderLen, 1, bmpFileOut);
-}
-
-
-void writeFile(FILE *bmpFileOut) {
-    addHeader(bmpFileOut);
-
-    bmpOutput(bmpFileOut);
 }
