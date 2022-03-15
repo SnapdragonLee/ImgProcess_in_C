@@ -49,10 +49,10 @@ void bmpIHeaderRead(FILE *bmpIn) {
     printf("The IHeader Part is %u Bytes\n", bmpIHeader.bISize);
 
     width = bmpIHeader.bIWidth;
-    printf("The image width is %ld\n", bmpIHeader.bIWidth);
+    printf("The image width is %d\n", bmpIHeader.bIWidth);
 
     height = bmpIHeader.bIHeight;
-    printf("The image height is %ld\n"
+    printf("The image height is %d\n"
            "The image plane is %hu\n", bmpIHeader.bIHeight, bmpIHeader.bIPlanes);
 
     if (bmpIHeader.bIBitCount != 24) {
@@ -63,9 +63,9 @@ void bmpIHeaderRead(FILE *bmpIn) {
 
     printf("The image data is %u Bytes\n", bmpIHeader.bISizeImage);
 
-    printf("The bIXPelsPerMeter is %ld\n", bmpIHeader.bIXPelsPerMeter);
+    printf("The bIXPelsPerMeter is %d\n", bmpIHeader.bIXPelsPerMeter);
 
-    printf("The bIYPelsPerMeter is %ld\n", bmpIHeader.bIYPelsPerMeter);
+    printf("The bIYPelsPerMeter is %d\n", bmpIHeader.bIYPelsPerMeter);
 
     printf("The bIClrUsed is %u\n", bmpIHeader.bIClrUsed);
 

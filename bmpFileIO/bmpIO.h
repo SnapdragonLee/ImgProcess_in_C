@@ -24,14 +24,14 @@ typedef struct bmpFileHeader {
 
 typedef struct bmpInfoHeader {
     unsigned int bISize;          // Info header size (14-17 Bytes)
-    long bIWidth;                 // Width  (18-21 Bytes)
-    long bIHeight;                // Height  (22-25 Bytes)
+    int bIWidth;                 // Width  (18-21 Bytes)
+    int bIHeight;                // Height  (22-25 Bytes)
     unsigned short bIPlanes;      // Number of colour planes (26-27 Bytes)
     unsigned short bIBitCount;    // Bits per pixel (28-29 Bytes)
     unsigned int bICompression;   // Compression type (30-33 Bytes)
     unsigned int bISizeImage;     // Image size (34-37 Bytes)
-    long bIXPelsPerMeter;         // XPixels per meter (38-41 Bytes)
-    long bIYPelsPerMeter;         // YPixels per meter (42-45 Bytes)
+    int bIXPelsPerMeter;         // XPixels per meter (38-41 Bytes)
+    int bIYPelsPerMeter;         // YPixels per meter (42-45 Bytes)
     unsigned int bIClrUsed;       // Number of colours (46-49 Bytes)
     unsigned int bIClrImportant;  // Important colours (50-53 Bytes)
 } bmpInfoHeader;
