@@ -44,7 +44,7 @@ typedef struct bmpPixelInfo {
     unsigned char rgbReserved;// 保留，必须为0
 } bmpPixelInfo;
 
-void readfile(FILE *bmpFileIn);
+void readFile(FILE *bmpFileIn);
 
 void bmpFHeaderRead(FILE *bmpFileIn);
 
@@ -55,12 +55,11 @@ void bmpIHeaderRead(FILE *bmpFileIn);
 void bmpDataPart(FILE *bmpFileIn);
 
 // output data to corresponding txt file
-void bmpoutput(FILE *bmpFileOut);
+void bmpOutput(FILE *bmpFileOut);
 
-void addHeadertofile(FILE *bmpFileOut);
+void addHeader(FILE *bmpFileOut);
 
-
-void writefile(FILE *bmpFileOut);
+void writeFile(FILE *bmpFileOut);
 
 
 

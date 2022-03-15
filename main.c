@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    readfile(bmpIn);
+    readFile(bmpIn);
     bmpDataPart(bmpIn);
 
 
@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    writefile(bmpOut);
+    writeFile(bmpOut);
 
     fclose(bmpIn);
     fclose(bmpOut);

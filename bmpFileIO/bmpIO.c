@@ -12,12 +12,10 @@ bmpInfoHeader bmpIHeader;
 bmpPixelInfo bmpPx;
 
 
-void readfile(FILE *bmpFileIn) {
-
+void readFile(FILE *bmpFileIn) {
     bmpFHeaderRead(bmpFileIn);
-    bmpIHeaderRead(bmpFileIn);
 
-    fseek(bmpFileIn, 0L, SEEK_SET);
+    bmpIHeaderRead(bmpFileIn);
 }
 
 
@@ -41,14 +39,14 @@ void bmpFHeaderRead(FILE *bmpIn) {
 
     bmpFHeader.bFOffBits = (((int) bmpFHeader.bFOffBits_2) << 16) + bmpFHeader.bFOffBits_1;
     OffSet = bmpFHeader.bFOffBits;
-    printf("The Header Part is %u Bytes\n", bmpFHeader.bFOffBits);
+    printf("The FHeader part is %u Bytes\n", bmpFHeader.bFOffBits);
 }
 
 void bmpIHeaderRead(FILE *bmpIn) {
     /*printf("bmpInfoHeader size %llu\n", sizeof(bmpInfoHeader));*/
 
     fread(&bmpIHeader, BmpIHeaderLen, 1, bmpIn);
-    printf("The Info Part is %u Bytes\n", bmpIHeader.bISize);
+    printf("The IHeader Part is %u Bytes\n", bmpIHeader.bISize);
 
     width = bmpIHeader.bIWidth;
     printf("The image width is %u Bytes\n", bmpIHeader.bISize);
@@ -69,24 +67,23 @@ void bmpIHeaderRead(FILE *bmpIn) {
 
     printf("The bIYPelsPerMeter is %ld\n", bmpIHeader.bIYPelsPerMeter);
 
-    printf("The bIClrUsed is %u Bytes\n", bmpIHeader.bIClrUsed);
+    printf("The bIClrUsed is %u\n", bmpIHeader.bIClrUsed);
 
-    printf("The bIClrImportant is %u Bytes\n", bmpIHeader.bIClrImportant);
+    printf("The bIClrImportant is %u\n", bmpIHeader.bIClrImportant);
 
 }
 
-void bmpDataPart(FILE *fpbmp) {
+void bmpDataPart(FILE *bmpData) {
     int i, j = 0;
     int stride;
     unsigned char *pix = NULL;
 
-    fseek(fpbmp, OffSet, SEEK_SET);
     stride = (24 * width + 31) / 8;
     stride = stride / 4 * 4;
     pix = malloc(stride);
 
     for (j = 0; j < height; j++) {
-        fread(pix, 1, stride, fpbmp);
+        fread(pix, 1, stride, bmpData);
 
         for (i = 0; i < width; i++) {
             r[height - 1 - j][i] = pix[i * 3 + 2];
@@ -103,7 +100,7 @@ void bmpDataPart(FILE *fpbmp) {
 }
 
 
-void bmpoutput(FILE *fpout) {
+void bmpOutput(FILE *bmpFileOut) {
     long i, j = 0;
     long stride;
     unsigned char *pixout = NULL;
@@ -112,28 +109,25 @@ void bmpoutput(FILE *fpout) {
     stride = stride / 4 * 4;
     pixout = malloc(stride);
 
-    fseek(fpout, OffSet, SEEK_SET);
-
-
     for (j = 0; j < height; j++) {
         for (i = 0; i < width; i++) {
             pixout[i * 3 + 2] = output_r[height - 1 - j][i];
             pixout[i * 3 + 1] = output_g[height - 1 - j][i];
             pixout[i * 3] = output_b[height - 1 - j][i];
         }
-        fwrite(pixout, 1, stride, fpout);
+        fwrite(pixout, 1, stride, bmpFileOut);
 
     }
 }
 
-void addHeadertofile(FILE *bmpFileOut) {
+void addHeader(FILE *bmpFileOut) {
     fwrite(&bmpFHeader, BmpFHeaderLen, 1, bmpFileOut);//输出头文件
     fwrite(&bmpIHeader, BmpIHeaderLen, 1, bmpFileOut);
 }
 
 
-void writefile(FILE *bmpFileOut) {
-    addHeadertofile(bmpFileOut);
+void writeFile(FILE *bmpFileOut) {
+    addHeader(bmpFileOut);
 
-    bmpoutput(bmpFileOut);
+    bmpOutput(bmpFileOut);
 }
