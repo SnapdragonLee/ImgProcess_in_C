@@ -49,14 +49,14 @@ void bmpIHeaderRead(FILE *bmpIn) {
     printf("The IHeader Part is %u Bytes\n", bmpIHeader.bISize);
 
     width = bmpIHeader.bIWidth;
-    printf("The image width is %u Bytes\n", bmpIHeader.bISize);
+    printf("The image width is %ld\n", bmpIHeader.bIWidth);
 
     height = bmpIHeader.bIHeight;
-    printf("The image height is %u Bytes\n"
-           "The image plane is %u\n", bmpIHeader.bISize, bmpIHeader.bIPlanes);
+    printf("The image height is %ld\n"
+           "The image plane is %hu\n", bmpIHeader.bIHeight, bmpIHeader.bIPlanes);
 
     if (bmpIHeader.bIBitCount != 24) {
-        printf("This file bit count is %u, may cause errors for some reason\n", bmpIHeader.bIBitCount);
+        printf("This file bit count is %hu, may cause errors for some reason\n", bmpIHeader.bIBitCount);
     }
 
     printf("The compression type is %u\n", bmpIHeader.bICompression);
