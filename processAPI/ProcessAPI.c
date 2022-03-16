@@ -5,54 +5,57 @@
 #include "../settings/settings.h"
 #include "ProcessAPI.h"
 
-void RGBtoYUV() {
-    //convert
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
+void RGB2Gray() {
+    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
+        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
+            gray[j][i] = 0.299 * r[j][i] + 0.587 * g[j][i] + 0.114 * b[j][i];
+        }
+    }
+}
+
+void RGB2YUV() {
+    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
+        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
             Y[j][i] = 0.299 * r[j][i] + 0.587 * g[j][i] + 0.114 * b[j][i];
             U[j][i] = -0.147 * r[j][i] - 0.289 * g[j][i] + 0.436 * b[j][i];
             V[j][i] = 0.615 * r[j][i] - 0.515 * g[j][i] - 0.100 * b[j][i];
         }
     }
-
 }
 
-void YUVtoGray()//output YUV
+void YUV2Gray()//output YUV
 {
 
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
-            output_Y[j][i] = Y[j][i];
-            output_U[j][i] = 0;
-            output_V[j][i] = 0;
+    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
+        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
+            Y[j][i] = Y[j][i];
+            U[j][i] = 0;
+            V[j][i] = 0;
         }
     }
-
 }
 
-
-void YUVtoRGB() {
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
-            output_r[j][i] = output_Y[j][i] + 1.140 * output_V[j][i];
-            output_g[j][i] = output_Y[j][i] - 0.394 * output_U[j][i] - 0.581 * output_V[j][i];
-            output_b[j][i] = output_Y[j][i] + 2.032 * output_U[j][i];
+void YUV2RGB() {
+    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
+        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
+            r[j][i] = Y[j][i] + 1.140 * V[j][i];
+            g[j][i] = Y[j][i] - 0.394 * U[j][i] - 0.581 * V[j][i];
+            b[j][i] = Y[j][i] + 2.032 * U[j][i];
         }
     }
-
 }
 
 void ChangeTheLuminance() {
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
-            output_Y[j][i] = 255 - Y[j][i];
-            output_U[j][i] = U[j][i];
-            output_V[j][i] = V[j][i];
+    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
+        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
+            Y[j][i] = 255 - Y[j][i];
+            U[j][i] = U[j][i];
+            V[j][i] = V[j][i];
         }
     }
 }
 
-void YUVtoBinarization()//output YUV
+void YUV2Binarization()//output YUV
 {
 
     //OTSU althrithm '大津算法'
@@ -66,8 +69,8 @@ void YUVtoBinarization()//output YUV
         /*Pre calcu*/
         long all_below_T = 0L, all_above_T = 0L;
         number_below_T = 0L, number_above_T = 0L;
-        for (int j = 0; j < height; j++) {
-            for (int i = 0; i < width; i++) {
+        for (int j = 0; j < bmpIHeader.bIHeight; j++) {
+            for (int i = 0; i < bmpIHeader.bIWidth; i++) {
                 if (T >= Y[j][i]) {
                     number_below_T++;
                     all_below_T += Y[j][i];
@@ -81,8 +84,8 @@ void YUVtoBinarization()//output YUV
         u0 = (double) all_below_T / number_below_T;
         u1 = (double) all_above_T / number_above_T;
         /*Step2*/
-        w0 = (double) number_below_T / (height * width);
-        w1 = (double) number_above_T / (height * width);
+        w0 = (double) number_below_T / (bmpIHeader.bIHeight * bmpIHeader.bIWidth);
+        w1 = (double) number_above_T / (bmpIHeader.bIHeight * bmpIHeader.bIWidth);
         u = w0 * u0 + w1 * u1;
         g[num] = w0 * pow(abs(u0 - u), 2.0) + w1 * pow(abs(u1 - u), 2.0);
         /*Step 3 find max g*/
@@ -92,14 +95,14 @@ void YUVtoBinarization()//output YUV
         }
     }
     //'用算出来的perfect_T解出二值图'
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
+    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
+        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
             if (Y[j][i] < perfect_T)
-                output_Y[j][i] = 0;
+                Y[j][i] = 0;
             else
-                output_Y[j][i] = 255;
-            output_U[j][i] = 0;
-            output_V[j][i] = 0;
+                Y[j][i] = 255;
+            U[j][i] = 0;
+            V[j][i] = 0;
         }
     }
     printf("Binarization finished!\n");
@@ -120,17 +123,17 @@ void Dilation_Lining(char dowhat) {
     }
 
     /*叠加原图*/
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
-            output_Y[j][i] = Y[j][i];
-            output_U[j][i] = 0;
-            output_V[j][i] = 0;
+    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
+        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
+            Y[j][i] = Y[j][i];
+            U[j][i] = 0;
+            V[j][i] = 0;
         }
     }
 
     /*膨胀一小圈*/
-    for (int j = 0; j < height - elementline; j++) {
-        for (int i = 0; i < width - elementline; i++) {
+    for (int j = 0; j < bmpIHeader.bIHeight - elementline; j++) {
+        for (int i = 0; i < bmpIHeader.bIWidth - elementline; i++) {
             int Istrue = 0;
             for (int i1 = 0; i1 < elementline; i1++)
                 for (int j1 = 0; j1 < elementline; j1++) {
@@ -139,7 +142,7 @@ void Dilation_Lining(char dowhat) {
                 }
             /*大概，YUV中黑色是。。。Y=0 （Ｔ＾Ｔ）*/
             if (Istrue == 1)
-                output_Y[j + centre][i + centre] = dowhat == 'd' ? 0 : 255;
+                Y[j + centre][i + centre] = dowhat == 'd' ? 0 : 255;
 
         }
     }
@@ -160,17 +163,17 @@ void Erosion() {
     }
 
     /*叠加原图*/
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
-            output_Y[j][i] = 255;
-            output_U[j][i] = 0;
-            output_V[j][i] = 0;
+    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
+        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
+            Y[j][i] = 255;
+            U[j][i] = 0;
+            V[j][i] = 0;
         }
     }
 
     /*缩小一小圈*/
-    for (int j = 0; j < height - elementline; j++) {
-        for (int i = 0; i < width - elementline; i++) {
+    for (int j = 0; j < bmpIHeader.bIHeight - elementline; j++) {
+        for (int i = 0; i < bmpIHeader.bIWidth - elementline; i++) {
             int Istrue = 0;
             for (int i1 = 0; i1 < elementline; i1++)
                 for (int j1 = 0; j1 < elementline; j1++) {
@@ -182,7 +185,7 @@ void Erosion() {
             //printf("%d",Istrue);
             /*大概，YUV中黑色是。。。Y=0 （Ｔ＾Ｔ）*/
             if (Istrue == 0)
-                output_Y[j + centre][i + centre] = 0;//所有情况都成立！
+                Y[j + centre][i + centre] = 0;//所有情况都成立！
 
         }
     }
@@ -192,43 +195,31 @@ void Erosion() {
 void Opening_Closing(char dowhat) {
     if (dowhat == 'o') {
         Erosion();
-        BetweenTwoOperationProcessing();
         Dilation_Lining('d');
         printf("Opening finished, Now outer noises are removed!\n");
     } else if (dowhat == 'c') {
         Dilation_Lining('d');
-        BetweenTwoOperationProcessing();
         Erosion();
         printf("Closing finished, Now inner noises are removed!\n");
     } else
         printf("Opening_Closing fail!\n");
 }
 
-void BetweenTwoOperationProcessing() {
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
-            Y[j][i] = output_Y[j][i];
-            U[j][i] = output_U[j][i];
-            V[j][i] = output_V[j][i];
-        }
-    }
-}
-
 //============================3==============================
 void VisibilityEnhancement() {
     int maxLumnance = 0;
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
+    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
+        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
             if (Y[j][i] > maxLumnance)
                 maxLumnance = Y[j][i];
         }
     }
 
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
-            output_Y[j][i] = (unsigned char) 255 * (log10(Y[j][i] + 1)) / (log10(maxLumnance + 1));
-            output_U[j][i] = 0;
-            output_V[j][i] = 0;
+    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
+        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
+            Y[j][i] = (unsigned char) 255 * (log10(Y[j][i] + 1)) / (log10(maxLumnance + 1));
+            U[j][i] = 0;
+            V[j][i] = 0;
         }
     }
 
@@ -238,8 +229,8 @@ void HistogramEqualization_r() {
     //number 统计
     long n0[256] = {0.0};
     /*0-255 直方图X3 RGB*/
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
+    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
+        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
             n0[r[j][i]]++;
         }
     }
@@ -247,7 +238,7 @@ void HistogramEqualization_r() {
     /*0-1/255-...-254/255,1*/
     double p0[256] = {0.0};
     for (int i = 0; i < 256; i++)
-        p0[i] = n0[i] / (1.0 * height * width);
+        p0[i] = n0[i] / (1.0 * bmpIHeader.bIHeight * bmpIHeader.bIWidth);
 
     /*n[k]0-255:number*/
 
@@ -280,9 +271,9 @@ void HistogramEqualization_r() {
         //	break;
     }
     //输出
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
-            output_r[j][i] = min_number[r[j][i]];
+    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
+        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
+            r[j][i] = min_number[r[j][i]];
         }
     }
 
@@ -294,8 +285,8 @@ void HistogramEqualization_g() {
     //number 统计
     long n0[256] = {0.0};
     /*0-255 直方图X3 RGB*/
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
+    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
+        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
             n0[g[j][i]]++;
         }
     }
@@ -303,7 +294,7 @@ void HistogramEqualization_g() {
     /*0-1/255-...-254/255,1*/
     double p0[256] = {0.0};
     for (int i = 0; i < 256; i++)
-        p0[i] = n0[i] / (1.0 * height * width);
+        p0[i] = n0[i] / (1.0 * bmpIHeader.bIHeight * bmpIHeader.bIWidth);
 
     /*n[k]0-255:number*/
 
@@ -336,9 +327,9 @@ void HistogramEqualization_g() {
         //	break;
     }
     //输出
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
-            output_g[j][i] = min_number[g[j][i]];
+    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
+        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
+            g[j][i] = min_number[g[j][i]];
         }
     }
 
@@ -348,18 +339,20 @@ void HistogramEqualization_g() {
 
 void HistogramEqualization_b() {
     //number 统计
-    long n0[256] = {0.0};
+    long n0[256] = {0};
     /*0-255 直方图X3 RGB*/
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
+    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
+        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
             n0[b[j][i]]++;
         }
     }
 
     /*0-1/255-...-254/255,1*/
     double p0[256] = {0.0};
-    for (int i = 0; i < 256; i++)
-        p0[i] = n0[i] / (1.0 * height * width);
+    for (int i = 0; i < 256; i++){
+        p0[i] = n0[i] / (1.0 * bmpIHeader.bIHeight * bmpIHeader.bIWidth);
+    }
+
 
     /*n[k]0-255:number*/
 
@@ -373,10 +366,9 @@ void HistogramEqualization_b() {
     /*找距离s[k]最近的像素点s[x]*/
     double minmize = 1.0;
     int min_number[256] = {0};
-    double diff = 0.0;
+    double diff;
     for (int j = 0; j < 256; j++) {
         //printf("!! == %f\n",s0[j]);
-        diff = 0.0;
         minmize = 1.0;
         for (int i = 0; i < 256; i++) {
             double pix0 = 1.0 * i / 256;
@@ -392,9 +384,9 @@ void HistogramEqualization_b() {
         //	break;
     }
     //输出
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
-            output_b[j][i] = min_number[b[j][i]];
+    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
+        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
+            b[j][i] = min_number[b[j][i]];
         }
     }
 
@@ -406,8 +398,8 @@ void HistogramEqualization_Y() {
     //number 统计
     long n0[256] = {0.0};
     /*0-255 直方图X3 RGB*/
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
+    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
+        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
             n0[Y[j][i]]++;
         }
     }
@@ -415,7 +407,7 @@ void HistogramEqualization_Y() {
     /*0-1/255-...-254/255,1*/
     double p0[256] = {0.0};
     for (int i = 0; i < 256; i++)
-        p0[i] = n0[i] / (1.0 * height * width);
+        p0[i] = n0[i] / (1.0 * bmpIHeader.bIHeight * bmpIHeader.bIWidth);
 
     /*n[k]0-255:number*/
 
@@ -448,9 +440,9 @@ void HistogramEqualization_Y() {
         //	break;
     }
     //输出
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
-            output_Y[j][i] = min_number[Y[j][i]];
+    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
+        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
+            Y[j][i] = min_number[Y[j][i]];
         }
     }
 
@@ -469,13 +461,11 @@ void translation(int sizeX, int sizeY, int sizeX1, int sizeY1, int x, int y) {
         printf("Be careful to mentain this: sizeX<=sizeX1 and sizeY<=sizeY1.\n");
         return;
     }
-    for (int y0 = 0; y0 < height; y0++) {
-        for (int x0 = 0; x0 < width; x0++) {
+    for (int y0 = 0; y0 < bmpIHeader.bIHeight; y0++) {
+        for (int x0 = 0; x0 < bmpIHeader.bIWidth; x0++) {
             output_r[y0][x0] = r[y0][x0];
             output_g[y0][x0] = g[y0][x0];
             output_b[y0][x0] = b[y0][x0];
-
-
         }
     }
 
@@ -512,8 +502,8 @@ void translation1(int sizeX, int sizeY, int sizeX1, int sizeY1, int x, int y) {
         printf("Be careful to mentain this: sizeX<=sizeX1 and sizeY<=sizeY1.\n");
         return;
     }
-    for (int y0 = 0; y0 < height; y0++) {
-        for (int x0 = 0; x0 < width; x0++) {
+    for (int y0 = 0; y0 < bmpIHeader.bIHeight; y0++) {
+        for (int x0 = 0; x0 < bmpIHeader.bIWidth; x0++) {
             output_r[y0][x0] = 255;
             output_g[y0][x0] = 255;
             output_b[y0][x0] = 255;
@@ -534,19 +524,19 @@ void translation1(int sizeX, int sizeY, int sizeX1, int sizeY1, int x, int y) {
 
 void mirror(char character) {
     if (character == 'x')
-        for (int y0 = 0; y0 < height; y0++) {
-            for (int x0 = 0; x0 < width; x0++) {
-                output_r[y0][x0] = r[y0][width - x0];
-                output_g[y0][x0] = g[y0][width - x0];
-                output_b[y0][x0] = b[y0][width - x0];
+        for (int y0 = 0; y0 < bmpIHeader.bIHeight; y0++) {
+            for (int x0 = 0; x0 < bmpIHeader.bIWidth; x0++) {
+                output_r[y0][x0] = r[y0][bmpIHeader.bIWidth - x0];
+                output_g[y0][x0] = g[y0][bmpIHeader.bIWidth - x0];
+                output_b[y0][x0] = b[y0][bmpIHeader.bIWidth - x0];
             }
         }
     else if (character == 'y')
-        for (int y0 = 0; y0 < height; y0++) {
-            for (int x0 = 0; x0 < width; x0++) {
-                output_r[y0][x0] = r[height - y0][x0];
-                output_g[y0][x0] = g[height - y0][x0];
-                output_b[y0][x0] = b[height - y0][x0];
+        for (int y0 = 0; y0 < bmpIHeader.bIHeight; y0++) {
+            for (int x0 = 0; x0 < bmpIHeader.bIWidth; x0++) {
+                output_r[y0][x0] = r[bmpIHeader.bIHeight - y0][x0];
+                output_g[y0][x0] = g[bmpIHeader.bIHeight - y0][x0];
+                output_b[y0][x0] = b[bmpIHeader.bIHeight - y0][x0];
             }
         }
     else
@@ -559,8 +549,8 @@ void Scaling(float ratioX, float ratioY) {
         return;
     }
     if (ratioX <= 1 && ratioY <= 1) {
-        for (int y0 = 0; y0 < height; y0++) {
-            for (int x0 = 0; x0 < width; x0++) {
+        for (int y0 = 0; y0 < bmpIHeader.bIHeight; y0++) {
+            for (int x0 = 0; x0 < bmpIHeader.bIWidth; x0++) {
                 int x1 = ratioX * x0;
                 int y1 = ratioY * y0;
 
@@ -572,8 +562,8 @@ void Scaling(float ratioX, float ratioY) {
         }
     } else if (ratioX > 1 || ratioY > 1) {
 
-        for (int y0 = 0; y0 < height; y0++) {
-            for (int x0 = 0; x0 < width; x0++) {
+        for (int y0 = 0; y0 < bmpIHeader.bIHeight; y0++) {
+            for (int x0 = 0; x0 < bmpIHeader.bIWidth; x0++) {
                 int x1 = ratioX * x0;
                 int y1 = ratioY * y0;
 
@@ -584,8 +574,8 @@ void Scaling(float ratioX, float ratioY) {
             }
         }
 
-        for (int y0 = 0; y0 < height * ratioY; y0++) {
-            for (int x0 = 0; x0 < width * ratioX; x0++) {
+        for (int y0 = 0; y0 < bmpIHeader.bIHeight * ratioY; y0++) {
+            for (int x0 = 0; x0 < bmpIHeader.bIWidth * ratioX; x0++) {
                 if (records[y0][x0] == 0) {
                     if (ratioX > 1 && ratioY > 1) {
                         output_r[y0][x0] = r[(int) (y0 / ratioY)][(int) (x0 / ratioX)];
@@ -634,9 +624,9 @@ void RBF_Gaussian(unsigned char temple[], int x, int y, int paramenter)//3
                 continue;
             double radial = abs(x - x0) + abs(y - y0);//sqrt(pow((x-x0),2)+pow((y-y0),2));
             double w1 = Gaussian(radial, lamda) / w0;
-            pixelout[0] += w1 * output_r[y0][x0];
-            pixelout[1] += w1 * output_g[y0][x0];
-            pixelout[2] += w1 * output_b[y0][x0];
+            pixelout[0] += w1 * r[y0][x0];
+            pixelout[1] += w1 * g[y0][x0];
+            pixelout[2] += w1 * b[y0][x0];
         }
     }
     for (int i = 0; i < 3; i++) temple[i] = (unsigned char) pixelout[i];//output!
@@ -646,14 +636,14 @@ void RBF_Gaussian(unsigned char temple[], int x, int y, int paramenter)//3
 
 void Rotation(double angle) {
     angle = (angle - 90) / 180 * 3.1415;
-    for (int y0 = 0; y0 < height; y0++) {
-        for (int x0 = 0; x0 < width; x0++) {
+    for (int y0 = 0; y0 < bmpIHeader.bIHeight; y0++) {
+        for (int x0 = 0; x0 < bmpIHeader.bIWidth; x0++) {
             //int x1 = cos(angle)*x0-sin(angle)*y0;
             //int y1 = sin(angle)*x0+cos(angle)*y0;
-            int x1 = sin(angle) * (width / 2 - x0) + cos(angle) * (height / 2 - y0);
-            int y1 = sin(angle) * (height / 2 - y0) - cos(angle) * (width / 2 - x0);
-            y1 += height / 2;
-            x1 += width / 2;
+            int x1 = sin(angle) * (bmpIHeader.bIWidth / 2 - x0) + cos(angle) * (bmpIHeader.bIHeight / 2 - y0);
+            int y1 = sin(angle) * (bmpIHeader.bIHeight / 2 - y0) - cos(angle) * (bmpIHeader.bIWidth / 2 - x0);
+            y1 += bmpIHeader.bIHeight / 2;
+            x1 += bmpIHeader.bIWidth / 2;
             records[y1][x1] = 1;
             output_r[y1][x1] = r[y0][x0];
             output_g[y1][x1] = g[y0][x0];
@@ -661,8 +651,8 @@ void Rotation(double angle) {
         }
     }
 
-    for (int y0 = 0; y0 < height; y0++) {
-        for (int x0 = 0; x0 < width; x0++) {
+    for (int y0 = 0; y0 < bmpIHeader.bIHeight; y0++) {
+        for (int x0 = 0; x0 < bmpIHeader.bIWidth; x0++) {
             if (records[y0][x0] != 1) {
                 /*指针传递三个参数值*/
                 unsigned char temple[3];
@@ -673,12 +663,11 @@ void Rotation(double angle) {
             }
         }
     }
-
 }
 
 void Shearing(float dx, float dy) {
-    for (int y0 = 0; y0 < height; y0++) {
-        for (int x0 = 0; x0 < width; x0++) {
+    for (int y0 = 0; y0 < bmpIHeader.bIHeight; y0++) {
+        for (int x0 = 0; x0 < bmpIHeader.bIWidth; x0++) {
             int x1 = 0;
             int y1 = 0;
             if (dx == 0 && dy != 0) {
@@ -708,7 +697,7 @@ void MeanFilter(unsigned char temple[], int x, int y, int paramenter)//给出该
     int count = 0;
     for (int y0 = y - paramenter; y0 <= y + paramenter; y0++) {
         for (int x0 = x - paramenter; x0 <= x + paramenter; x0++) {
-            if (x0 < 0 || x0 > width - 1 || y0 < 0 || y0 > height - 1)
+            if (x0 < 0 || x0 > bmpIHeader.bIWidth - 1 || y0 < 0 || y0 > bmpIHeader.bIHeight - 1)
                 continue;
             wr += r[y0][x0];
             wg += g[y0][x0];
@@ -726,13 +715,13 @@ void MeanFilter(unsigned char temple[], int x, int y, int paramenter)//给出该
 
 void meanFiltering(int paramenter) {
 
-    for (int y0 = 0; y0 < height; y0++) {
-        for (int x0 = 0; x0 < width; x0++) {
+    for (int y0 = 0; y0 < bmpIHeader.bIHeight; y0++) {
+        for (int x0 = 0; x0 < bmpIHeader.bIWidth; x0++) {
             unsigned char temple[3];
             MeanFilter(temple, x0, y0, paramenter);
-            output_r[y0][x0] = temple[0];
-            output_g[y0][x0] = temple[1];
-            output_b[y0][x0] = temple[2];
+            r[y0][x0] = temple[0];
+            g[y0][x0] = temple[1];
+            b[y0][x0] = temple[2];
         }
     }
 
@@ -741,19 +730,19 @@ void meanFiltering(int paramenter) {
 }
 
 void Meanfilter_Y(int paramenter) {
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
+    for (int y = 0; y < bmpIHeader.bIHeight; y++) {
+        for (int x = 0; x < bmpIHeader.bIWidth; x++) {
             double w0 = 0.0;
             int count = 0;
             for (int y0 = y - paramenter; y0 <= y + paramenter; y0++) {
                 for (int x0 = x - paramenter; x0 <= x + paramenter; x0++) {
-                    if (x0 < 0 || x0 > width - 1 || y0 < 0 || y0 > height - 1)
+                    if (x0 < 0 || x0 > bmpIHeader.bIWidth - 1 || y0 < 0 || y0 > bmpIHeader.bIHeight - 1)
                         continue;
                     w0 += Y[y0][x0];
                     count++;
                 }
             }
-            output_Y[y][x] = w0 / count;
+            Y[y][x] = w0 / count;
         }
     }
 
@@ -765,7 +754,7 @@ unsigned char Laplacian_filter_Y(int x, int y) {
     int w0 = 0;
     for (int y0 = y - paramenter; y0 <= y + paramenter; y0++) {
         for (int x0 = x - paramenter; x0 <= x + paramenter; x0++) {
-            if (x0 < 0 || x0 > width - 1 || y0 < 0 || y0 > height - 1)
+            if (x0 < 0 || x0 > bmpIHeader.bIWidth - 1 || y0 < 0 || y0 > bmpIHeader.bIHeight - 1)
                 continue;
             if (x == x0 && y == y0) {
                 w0 -= 4 * Y[y0][x0];
@@ -779,12 +768,12 @@ unsigned char Laplacian_filter_Y(int x, int y) {
 
 void LaplacianFilter_Y(double paramenter) {
 
-    for (int y0 = 0; y0 < height; y0++) {
-        for (int x0 = 0; x0 < width; x0++) {
-            output_Y[y0][x0] = 0;
-            output_Y[y0][x0] += abs(paramenter * Laplacian_filter_Y(x0, y0));//nomal
+    for (int y0 = 0; y0 < bmpIHeader.bIHeight; y0++) {
+        for (int x0 = 0; x0 < bmpIHeader.bIWidth; x0++) {
+            Y[y0][x0] = 0;
+            Y[y0][x0] += abs(paramenter * Laplacian_filter_Y(x0, y0));//nomal
 
-            output_Y[y0][x0] += Y[y0][x0];
+            Y[y0][x0] += Y[y0][x0];
         }
     }
 
@@ -834,14 +823,14 @@ void RBF_Bilateral(unsigned char temple[], int x, int y, int paramenter, double 
 void BilateralFilter(int paramenter, double lamda_range, double lamda_color) {
     clock_t start, finish;
     start = clock();
-    for (int y0 = 0; y0 < height; y0++) {
-        for (int x0 = 0; x0 < width; x0++) {
+    for (int y0 = 0; y0 < bmpIHeader.bIHeight; y0++) {
+        for (int x0 = 0; x0 < bmpIHeader.bIWidth; x0++) {
             /*指针传递三个参数值*/
             unsigned char temple[3];
             RBF_Bilateral(temple, x0, y0, paramenter, lamda_range, lamda_color);
-            output_r[y0][x0] = temple[0];
-            output_g[y0][x0] = temple[1];
-            output_b[y0][x0] = temple[2];
+            r[y0][x0] = temple[0];
+            g[y0][x0] = temple[1];
+            b[y0][x0] = temple[2];
             //printf("%d\n",temple[0]-r[y0][x0]);
         }
     }
@@ -855,38 +844,29 @@ void BilateralFilter(int paramenter, double lamda_range, double lamda_color) {
 
 //=====================TEST===========================
 void testInputYUV() {
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
+    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
+        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
             printf("%d ", Y[j][i]);
         }
     }
 }
 
 void testOutputYUV() {
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
-            printf("%d ", output_Y[j][i]);
+    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
+        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
+            printf("%d ", Y[j][i]);
         }
     }
 }
 
 void testRGB() {
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
+    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
+        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
             printf("%d %d %d \n", r[j][i], g[j][i], b[j][i]);
         }
     }
 }
 
-void NoneProcess() {
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
-            output_r[j][i] = r[j][i];
-            output_g[j][i] = g[j][i];
-            output_b[j][i] = b[j][i];
-        }
-    }
-}
 //=====================TEST END=================
 
 

@@ -3,6 +3,7 @@
 //
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "../settings/settings.h"
 #include "bmpIO.h"
@@ -11,10 +12,15 @@ bmpFileHeader bmpFHeader;
 bmpInfoHeader bmpIHeader;
 bmpPixelInfo bmpPx;
 
+unsigned char *otherInfo = NULL;
+
+void skipPixelInfo();
+
 void readFile(FILE *bmpFileIn) {
     bmpFHeaderRead(bmpFileIn);
-
     bmpIHeaderRead(bmpFileIn);
+
+    skipPixelInfo(bmpFileIn);
 }
 
 
@@ -28,7 +34,7 @@ void bmpFHeaderRead(FILE *bmpIn) {
         exit(1);
     }
 
-    bmpFHeader.bFSize = (((int) bmpFHeader.bFSize_2) << 16) + bmpFHeader.bFSize_1;
+    bmpFHeader.bFSize = (bmpFHeader.bFSize_2 << 16) + bmpFHeader.bFSize_1;
     printf("File size is %u Bytes\n", bmpFHeader.bFSize);
 
     if (bmpFHeader.bFReserved1 != 0 || bmpFHeader.bFReserved2 != 0) {
@@ -36,8 +42,7 @@ void bmpFHeaderRead(FILE *bmpIn) {
         exit(2);
     }
 
-    bmpFHeader.bFOffBits = (((int) bmpFHeader.bFOffBits_2) << 16) + bmpFHeader.bFOffBits_1;
-    OffSet = bmpFHeader.bFOffBits;
+    bmpFHeader.bFOffBits = (bmpFHeader.bFOffBits_2 << 16) + bmpFHeader.bFOffBits_1;
     printf("The FHeader part is %u Bytes\n", bmpFHeader.bFOffBits);
 }
 
@@ -45,12 +50,11 @@ void bmpIHeaderRead(FILE *bmpIn) {
     /*printf("bmpInfoHeader size %llu\n", sizeof(bmpInfoHeader));*/
 
     fread(&bmpIHeader, BmpIHeaderLen, 1, bmpIn);
+
     printf("The IHeader Part is %u Bytes\n", bmpIHeader.bISize);
 
-    width = bmpIHeader.bIWidth;
     printf("The image width is %d\n", bmpIHeader.bIWidth);
 
-    height = bmpIHeader.bIHeight;
     printf("The image height is %d\n"
            "The image plane is %hu\n", bmpIHeader.bIHeight, bmpIHeader.bIPlanes);
 
@@ -72,29 +76,38 @@ void bmpIHeaderRead(FILE *bmpIn) {
 
 }
 
+void skipPixelInfo(FILE *bmpIn) {
+    if (bmpFHeader.bFOffBits - BmpHeaderLen != 0) {
+        otherInfo = (unsigned char *) malloc(bmpFHeader.bFOffBits - BmpHeaderLen);
+        fread(otherInfo, bmpFHeader.bFOffBits - BmpHeaderLen, 1, bmpIn);
+    }
+}
+
 void bmpDataFrame(FILE *bmpData) {
-    int i, j = 0;
-    int stride;
-    unsigned char *pix = NULL;
+    int i, j, stride = ((bmpIHeader.bIWidth * bmpIHeader.bIBitCount + 31) >> 5) << 2;
+    unsigned char *pix = (unsigned char *) malloc(stride);
+    switch (bmpIHeader.bIBitCount) {
+        case 8:
+            for (j = 0; j < bmpIHeader.bIHeight; j++) {
+                fread(pix, 1, stride, bmpData);
+                for (i = 0; i < bmpIHeader.bIWidth; i++) {
+                    gray[bmpIHeader.bIHeight - 1 - j][i] = pix[i];
+                }
+            }
+            break;
+        case 24:
+            for (j = 0; j < bmpIHeader.bIHeight; j++) {
+                fread(pix, 1, stride, bmpData);
 
-    stride = (24 * width + 31) / 8;
-    stride = stride / 4 * 4;
-    pix = malloc(stride);
-
-    for (j = 0; j < height; j++) {
-        fread(pix, 1, stride, bmpData);
-
-        for (i = 0; i < width; i++) {
-            r[height - 1 - j][i] = pix[i * 3 + 2];
-            g[height - 1 - j][i] = pix[i * 3 + 1];
-            b[height - 1 - j][i] = pix[i * 3];
-
-
-            output_r[height - 1 - j][i] = r[height - 1 - j][i];   // 255
-            output_g[height - 1 - j][i] = g[height - 1 - j][i];   // 255
-            output_b[height - 1 - j][i] = b[height - 1 - j][i];   // 255
-        }
-
+                for (i = 0; i < bmpIHeader.bIWidth; i++) {
+                    b[bmpIHeader.bIHeight - 1 - j][i] = pix[i * 3];
+                    g[bmpIHeader.bIHeight - 1 - j][i] = pix[i * 3 + 1];
+                    r[bmpIHeader.bIHeight - 1 - j][i] = pix[i * 3 + 2];
+                }
+            }
+            break;
+        default:
+            printf("Cannot process %u bitCount, please retry with other file", bmpIHeader.bIBitCount);
     }
 }
 
@@ -104,27 +117,74 @@ void writeFile(FILE *bmpFileOut) {
     bmpOutput(bmpFileOut);
 }
 
+void headerChange(int bitCount, int height, int width) {
+    bmpIHeader.bIBitCount = bitCount;
+    bmpIHeader.bIHeight = height;
+    bmpIHeader.bIWidth = width;
+    bmpIHeader.bISizeImage = (((width * bitCount + 31) >> 5) << 2) * height;
+    switch (bitCount) {
+        case 8:
+            bmpFHeader.bFOffBits_1 = (BmpHeaderLen + BmpBoardLen) << 16 >> 16;
+            bmpFHeader.bFOffBits_2 = (BmpHeaderLen + BmpBoardLen) >> 16;
+            bmpFHeader.bFOffBits = (bmpFHeader.bFOffBits_2 << 16) + bmpFHeader.bFOffBits_1;
+
+            bmpFHeader.bFSize_1 = (bmpIHeader.bISizeImage + BmpHeaderLen + BmpBoardLen) << 16 >> 16;
+            bmpFHeader.bFSize_2 = (bmpIHeader.bISizeImage + BmpHeaderLen + BmpBoardLen) >> 16;
+            bmpFHeader.bFSize = (bmpFHeader.bFSize_2 << 16) + bmpFHeader.bFSize_1;
+            break;
+        case 24:
+            bmpFHeader.bFOffBits_1 = BmpHeaderLen;
+            bmpFHeader.bFOffBits_2 = BmpHeaderLen >> 16;
+            bmpFHeader.bFOffBits = (bmpFHeader.bFOffBits_2 << 16) + bmpFHeader.bFOffBits_1;
+
+            bmpFHeader.bFSize_1 = (bmpIHeader.bISizeImage + BmpHeaderLen) << 16 >> 16;
+            bmpFHeader.bFSize_2 = (bmpIHeader.bISizeImage + BmpHeaderLen) >> 16;
+            bmpFHeader.bFSize = (bmpFHeader.bFSize_2 << 16) + bmpFHeader.bFSize_1;
+            break;
+        default:
+            printf("Cannot process %u bitCount, please retry with other file", bmpIHeader.bIBitCount);
+    }
+}
 
 void addHeader(FILE *bmpFileOut) {
-    fwrite(&bmpFHeader, BmpFHeaderLen, 1, bmpFileOut);//输出头文件
+    fwrite(&bmpFHeader, BmpFHeaderLen, 1, bmpFileOut);
     fwrite(&bmpIHeader, BmpIHeaderLen, 1, bmpFileOut);
+
+    if (bmpIHeader.bIBitCount == 8 && otherInfo == NULL) {
+        FILE *bmpBoard = fopen(BmpBoard, "rb");
+        otherInfo = (unsigned char *) malloc(BmpBoardLen);
+        fread(otherInfo, 1, BmpBoardLen, bmpBoard);
+        fwrite(otherInfo, BmpBoardLen, 1, bmpFileOut);
+    } else {
+        fwrite(otherInfo, bmpFHeader.bFOffBits - BmpHeaderLen, 1, bmpFileOut);
+    }
 }
 
 void bmpOutput(FILE *bmpFileOut) {
-    long i, j = 0;
-    long stride;
-    unsigned char *pixout = NULL;
+    int i, j, stride = ((bmpIHeader.bIWidth * bmpIHeader.bIBitCount + 31) >> 5) << 2;
+    unsigned char *pixout = (unsigned char *) malloc(stride);
+    memset(pixout, 0, stride);
 
-    stride = (24 * width + 31) / 8;
-    stride = stride / 4 * 4;
-    pixout = malloc(stride);
-
-    for (j = 0; j < height; j++) {
-        for (i = 0; i < width; i++) {
-            pixout[i * 3] = output_b[height - 1 - j][i];
-            pixout[i * 3 + 1] = output_g[height - 1 - j][i];
-            pixout[i * 3 + 2] = output_r[height - 1 - j][i];
-        }
-        fwrite(pixout, 1, stride, bmpFileOut);
+    switch (bmpIHeader.bIBitCount) {
+        case 8:
+            for (j = 0; j < bmpIHeader.bIHeight; j++) {
+                for (i = 0; i < bmpIHeader.bIWidth; i++) {
+                    pixout[i] = gray[bmpIHeader.bIHeight - 1 - j][i];
+                }
+                fwrite(pixout, 1, stride, bmpFileOut);
+            }
+            break;
+        case 24:
+            for (j = 0; j < bmpIHeader.bIHeight; j++) {
+                for (i = 0; i < bmpIHeader.bIWidth; i++) {
+                    pixout[i * 3] = b[bmpIHeader.bIHeight - 1 - j][i];
+                    pixout[i * 3 + 1] = g[bmpIHeader.bIHeight - 1 - j][i];
+                    pixout[i * 3 + 2] = r[bmpIHeader.bIHeight - 1 - j][i];
+                }
+                fwrite(pixout, 1, stride, bmpFileOut);
+            }
+            break;
+        default:
+            printf("Cannot process %u bitCount, please retry with other file", bmpIHeader.bIBitCount);
     }
 }

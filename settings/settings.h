@@ -5,13 +5,14 @@
 #ifndef IMGPROCESS_IN_C_SETTINGS_H
 #define IMGPROCESS_IN_C_SETTINGS_H
 
-#define MAXSIZE 10000
+#define MAX 1024
 #define elementline 3
-
-
 
 #define BmpFHeaderLen 14
 #define BmpIHeaderLen 40
+#define BmpHeaderLen (BmpFHeaderLen + BmpIHeaderLen)
+
+#define BmpBoardLen 1024
 
 #define BM 19778                  // The ASCII code for BM
 
@@ -52,19 +53,20 @@ extern bmpFileHeader bmpFHeader;
 extern bmpInfoHeader bmpIHeader;
 extern bmpPixelInfo bmpPx;
 
-extern unsigned int OffSet;
-extern long width;
-extern long height;
-extern;
+extern unsigned char Y[MAX][MAX];
+extern unsigned char U[MAX][MAX];
+extern unsigned char V[MAX][MAX];
+
+extern unsigned char r[MAX][MAX], output_r[MAX][MAX];
+extern unsigned char g[MAX][MAX], output_g[MAX][MAX];
+extern unsigned char b[MAX][MAX], output_b[MAX][MAX];
+extern unsigned char records[MAX][MAX];
+
+extern unsigned char gray[MAX][MAX];
 
 
-extern unsigned char Y[MAXSIZE][MAXSIZE], output_Y[MAXSIZE][MAXSIZE];
-extern unsigned char U[MAXSIZE][MAXSIZE], output_U[MAXSIZE][MAXSIZE];
-extern unsigned char V[MAXSIZE][MAXSIZE], output_V[MAXSIZE][MAXSIZE];
-
-extern unsigned char r[MAXSIZE][MAXSIZE], output_r[MAXSIZE][MAXSIZE];
-extern unsigned char g[MAXSIZE][MAXSIZE], output_g[MAXSIZE][MAXSIZE];
-extern unsigned char b[MAXSIZE][MAXSIZE], output_b[MAXSIZE][MAXSIZE];
-extern unsigned char records[MAXSIZE][MAXSIZE];
+extern char *SourceFile_Path, *OutputFile_Path;
+extern const char *OutputFile_Down;
+extern const char *BmpBoard;
 
 #endif //IMGPROCESS_IN_C_SETTINGS_H

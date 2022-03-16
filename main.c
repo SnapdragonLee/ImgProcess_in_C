@@ -1,8 +1,5 @@
 #include "header.h"
 
-char *SourceFile_Path, *OutputFile_Path;
-const char *OutputFile_Down = "-output.bmp";
-
 int main(int argc, char *argv[]) {
     if (argc > 1) {
         SourceFile_Path = OutputFile_Path = argv[1];
@@ -19,11 +16,18 @@ int main(int argc, char *argv[]) {
     readFile(bmpIn);
     bmpDataFrame(bmpIn);
 
+    /******* Add Img Process Algorithm below *******/
 
+    RGB2Gray();
 
+    /*RGB2YUV();
+    YUV2Gray();
+    YUV2RGB();
     HistogramEqualization_b();
     HistogramEqualization_g();
-    HistogramEqualization_r();
+    HistogramEqualization_r();*/
+
+    /******* Add Img Process Algorithm upon *******/
 
     strcpy(SourceFile_Path + strlen(SourceFile_Path) - 4, OutputFile_Down);
     FILE *bmpOut = fopen(OutputFile_Path, "wb+");
@@ -32,10 +36,11 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
+    headerChange(8, 512, 512);
+
     writeFile(bmpOut);
 
     fclose(bmpIn);
     fclose(bmpOut);
-
     return 0;
 }

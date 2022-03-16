@@ -10,10 +10,17 @@ unsigned int OffSet;
 long width;
 long height;
 
-unsigned char Y[MAXSIZE][MAXSIZE], output_Y[MAXSIZE][MAXSIZE];
-unsigned char U[MAXSIZE][MAXSIZE], output_U[MAXSIZE][MAXSIZE];
-unsigned char V[MAXSIZE][MAXSIZE], output_V[MAXSIZE][MAXSIZE];
-unsigned char r[MAXSIZE][MAXSIZE], output_r[MAXSIZE][MAXSIZE];
-unsigned char g[MAXSIZE][MAXSIZE], output_g[MAXSIZE][MAXSIZE];
-unsigned char b[MAXSIZE][MAXSIZE], output_b[MAXSIZE][MAXSIZE];
-unsigned char records[MAXSIZE][MAXSIZE];
+unsigned char Y[MAX][MAX];
+unsigned char U[MAX][MAX];
+unsigned char V[MAX][MAX];
+
+unsigned char r[MAX][MAX], output_r[MAX][MAX];
+unsigned char g[MAX][MAX], output_g[MAX][MAX];
+unsigned char b[MAX][MAX], output_b[MAX][MAX];
+unsigned char records[MAX][MAX];
+
+unsigned char gray[MAX][MAX];
+
+char *SourceFile_Path, *OutputFile_Path;
+const char *OutputFile_Down = "-output.bmp";
+const char *BmpBoard = "../bmpFileIO/bmpBoard.profile";

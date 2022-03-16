@@ -13,6 +13,8 @@ void bmpIHeaderRead(FILE *bmpFileIn);
 
 void bmpDataFrame(FILE *bmpFileIn);
 
+void headerChange(int bitCount, int height, int width);
+
 void writeFile(FILE *bmpFileOut);
 
 void bmpOutput(FILE *bmpFileOut);

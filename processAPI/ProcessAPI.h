@@ -1,4 +1,3 @@
-
 //
 // Created by snapdragon_manjaro21 on 2022/3/10.
 //
@@ -11,23 +10,23 @@
 #include <math.h>
 #include <time.h>
 
-void RGBtoYUV();
+void RGB2Gray();
 
-void YUVtoGray();
+void RGB2YUV();
 
-void YUVtoRGB();
+void YUV2Gray();
+
+void YUV2RGB();
 
 void ChangeTheLuminance();
 
-void YUVtoBinarization();
+void YUV2Binarization();
 
 void Dilation_Lining(char dowhat);
 
 void Erosion();
 
 void Opening_Closing(char dowhat);
-
-void BetweenTwoOperationProcessing();
 
 void VisibilityEnhancement();
 
@@ -76,7 +75,6 @@ void testOutputYUV();
 
 void testRGB();
 
-void NoneProcess();
 //=============TEST FUNCTION END============//
 
 
