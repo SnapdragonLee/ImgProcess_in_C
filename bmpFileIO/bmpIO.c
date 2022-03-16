@@ -11,7 +11,6 @@ bmpFileHeader bmpFHeader;
 bmpInfoHeader bmpIHeader;
 bmpPixelInfo bmpPx;
 
-
 void readFile(FILE *bmpFileIn) {
     bmpFHeaderRead(bmpFileIn);
 
@@ -73,7 +72,7 @@ void bmpIHeaderRead(FILE *bmpIn) {
 
 }
 
-void bmpDataPart(FILE *bmpData) {
+void bmpDataFrame(FILE *bmpData) {
     int i, j = 0;
     int stride;
     unsigned char *pix = NULL;
@@ -122,11 +121,10 @@ void bmpOutput(FILE *bmpFileOut) {
 
     for (j = 0; j < height; j++) {
         for (i = 0; i < width; i++) {
-            pixout[i * 3 + 2] = output_r[height - 1 - j][i];
-            pixout[i * 3 + 1] = output_g[height - 1 - j][i];
             pixout[i * 3] = output_b[height - 1 - j][i];
+            pixout[i * 3 + 1] = output_g[height - 1 - j][i];
+            pixout[i * 3 + 2] = output_r[height - 1 - j][i];
         }
         fwrite(pixout, 1, stride, bmpFileOut);
-
     }
 }

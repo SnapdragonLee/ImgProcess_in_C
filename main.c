@@ -17,8 +17,13 @@ int main(int argc, char *argv[]) {
     }
 
     readFile(bmpIn);
-    bmpDataPart(bmpIn);
+    bmpDataFrame(bmpIn);
 
+
+
+    HistogramEqualization_b();
+    HistogramEqualization_g();
+    HistogramEqualization_r();
 
     strcpy(SourceFile_Path + strlen(SourceFile_Path) - 4, OutputFile_Down);
     FILE *bmpOut = fopen(OutputFile_Path, "wb+");
