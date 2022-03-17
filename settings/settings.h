@@ -53,7 +53,11 @@ extern bmpFileHeader bmpFHeader;
 extern bmpInfoHeader bmpIHeader;
 extern bmpPixelInfo bmpPx;
 
-extern unsigned char Y[MAX][MAX];
+extern unsigned char YCbCrY[MAX][MAX];
+extern unsigned char Cb[MAX][MAX];
+extern unsigned char Cr[MAX][MAX];
+
+extern unsigned char YuvY[MAX][MAX];
 extern unsigned char U[MAX][MAX];
 extern unsigned char V[MAX][MAX];
 

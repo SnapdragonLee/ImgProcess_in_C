@@ -18,7 +18,11 @@ int main(int argc, char *argv[]) {
 
     /******* Add Img Process Algorithm below *******/
 
-    RGB2Gray();
+    //RGB2Gray();
+    RGB2YUV();
+    YUV2Gray();
+    YUV2RGB();
+
 
     /*RGB2YUV();
     YUV2Gray();
@@ -36,7 +40,7 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    headerChange(8, 512, 512);
+    //headerChange(8, 512, 512);
 
     writeFile(bmpOut);
 

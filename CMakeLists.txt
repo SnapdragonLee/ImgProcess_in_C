@@ -7,8 +7,9 @@ set(CMAKE_C_STANDARD 17)
 aux_source_directory(processAPI P)
 aux_source_directory(bmpFileIO IO)
 aux_source_directory(settings ST)
+aux_source_directory(base BS)
 
-add_executable(ImgProcess_in_C main.c header.h ${P} ${IO} ${ST})
+add_executable(ImgProcess_in_C main.c header.h ${P} ${IO} ${ST} ${BS})
 
 IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
     set(CURRENT_SYSTEM Linux)

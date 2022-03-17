@@ -11,5 +11,6 @@
 #include "bmpFileIO/bmpIO.h"
 #include "processAPI/ProcessAPI.h"
 #include "settings/settings.h"
+#include "base/baseFunc.h"
 
 #endif //IMGPROCESS_IN_C_HEADER_H
