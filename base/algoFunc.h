@@ -2,25 +2,15 @@
 // Created by snapdragon_manjaro21 on 2022/3/17.
 //
 
-#ifndef IMGPROCESS_IN_C_BASEFUNC_H
-#define IMGPROCESS_IN_C_BASEFUNC_H
+#ifndef IMGPROCESS_IN_C_ALGOFUNC_H
+#define IMGPROCESS_IN_C_ALGOFUNC_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
 
-void RGB2Gray();
-
-void RGB2YUV();
-
-void YUV2Gray();
-
-void YUV2RGB();
-
 void ChangeTheLuminance();
-
-void YUV2Binarization();
 
 void Dilation_Lining(char dowhat);
 
@@ -77,4 +67,4 @@ void testRGB();
 
 //=============TEST FUNCTION END============//
 
-#endif //IMGPROCESS_IN_C_BASEFUNC_H
+#endif //IMGPROCESS_IN_C_ALGOFUNC_H

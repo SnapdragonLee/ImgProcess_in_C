@@ -2,15 +2,13 @@
 // Created by SNAPDRAGON_11800H on 3/15/2022.
 //
 
-#include <stdio.h>
-
 #include "settings.h"
 
-unsigned int OffSet;
-long width;
-long height;
+unsigned char YCbCrY[MAX][MAX];
+unsigned char Cb[MAX][MAX];
+unsigned char Cr[MAX][MAX];
 
-unsigned char Y[MAX][MAX];
+unsigned char YuvY[MAX][MAX];
 unsigned char U[MAX][MAX];
 unsigned char V[MAX][MAX];
 
