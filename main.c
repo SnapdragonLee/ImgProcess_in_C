@@ -18,15 +18,16 @@ int main(int argc, char *argv[]) {
 
     /******* Add Img Process Algorithm below *******/
 
-    //RGB2Gray();
+    RGB2Gray();
 
 
-    RGB2YUV();
+   /* RGB2YUV();
     YUV2Gray();
-    YUV2RGB();
-    HistogramEqualization_b();
-    HistogramEqualization_g();
-    HistogramEqualization_r();
+    YUV2RGB();*/
+    HistogramEqualization(gray);
+    HistogramEqualization(r);
+    HistogramEqualization(g);
+    HistogramEqualization(b);
 
     /******* Add Img Process Algorithm upon *******/
 

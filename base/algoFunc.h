@@ -10,6 +10,10 @@
 #include <math.h>
 #include <time.h>
 
+#include "../settings/settings.h"
+
+void HistogramEqualization(unsigned char dat[][MAX]);
+
 void ChangeTheLuminance();
 
 void Dilation_Lining(char dowhat);
@@ -19,14 +23,6 @@ void Erosion();
 void Opening_Closing(char dowhat);
 
 void VisibilityEnhancement();
-
-void HistogramEqualization_r();
-
-void HistogramEqualization_g();
-
-void HistogramEqualization_b();
-
-void HistogramEqualization_Y();
 
 void Scaling(float ratioX, float ratioY);
 

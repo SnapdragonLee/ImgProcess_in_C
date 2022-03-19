@@ -4,8 +4,6 @@
 
 #include "transferFunc.h"
 
-#include "../settings/settings.h"
-
 void RGB2Gray() {
     for (int j = 0; j < bmpIHeader.bIHeight; j++) {
         for (int i = 0; i < bmpIHeader.bIWidth; i++) {

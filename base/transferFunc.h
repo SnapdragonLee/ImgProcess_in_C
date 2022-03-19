@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <math.h>
 
+#include "../settings/settings.h"
+
 void RGB2Gray();
 
 void RGB2YUV();

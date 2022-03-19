@@ -4,82 +4,47 @@
 
 #include "algoFunc.h"
 
-#include "../settings/settings.h"
-
-void HistogramEqualization(unsigned char **dat) {
-    int cdf[256] = {0}, i, j;
+void HistogramEqualization(unsigned char dat[][MAX]) {
+    int cdf[256] = {0}, recipe[256], i, j;
     for (j = 0; j < bmpIHeader.bIHeight; j++) {
         for (i = 0; i < bmpIHeader.bIWidth; i++) {
             cdf[dat[j][i]]++;
         }
     }
 
-    int cdfMin = cdf[0], cdfMax = &cdf[0], flagMin = 0;
+    int cdfMin = 0, cdfMax = 0, flagMin = 0, minCdf, maxCdf, diff;
+
+    minCdf = maxCdf = cdf[0];
+    if (cdf[0] > 0) {
+        cdfMin = 0;
+        flagMin = 1;
+    }
     for (i = 1; i < 256; i++) {
         cdf[i] = cdf[i] + cdf[i - 1];
-        if (cdf[i] > 1 && flagMin != 0) {
-
+        if (flagMin != 1 && cdf[i] > 0) {
+            cdfMin = i;
+            flagMin = 1;
         }
+        if (maxCdf < cdf[i]) {
+            cdfMax = i;
+            maxCdf = cdf[i];
+        }
+    }
+
+    diff = cdf[cdfMax] - cdf[cdfMin];
+    for (i = cdfMin; i <= cdfMax; i++) {
+        recipe[i] = 1.0 * (cdf[i] - cdf[cdfMin]) / diff * 255;
+    }
+
+    for (j = 0; j < bmpIHeader.bIHeight; j++) {
+        for (i = 0; i < bmpIHeader.bIWidth; i++) {
+            dat[j][i] = recipe[dat[j][i]];
+        }
+        // printf("%d ", recipe[j]);
     }
 
     dat;
 
-}
-
-void HistogramEqualization_r() {
-    //number 统计
-    long n0[256] = {0.0};
-    /*0-255 直方图X3 RGB*/
-    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
-        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
-            n0[r[j][i]]++;
-        }
-    }
-
-    /*0-1/255-...-254/255,1*/
-    double p0[256] = {0.0};
-    for (int i = 0; i < 256; i++)
-        p0[i] = n0[i] / (1.0 * bmpIHeader.bIHeight * bmpIHeader.bIWidth);
-
-    /*n[k]0-255:number*/
-
-    /*Pn[n]*/
-    double s0[256] = {0.0};
-    s0[0] = p0[0];
-    for (int i = 1; i < 256; i++)
-        s0[i] = s0[i - 1] + p0[i];
-//---------------------------------
-    /*s[k]=求和Pn[0+..+k]*/
-    /*找距离s[k]最近的像素点s[x]*/
-    double minmize = 1.0;
-    int min_number[256] = {0};
-    double diff = 0.0;
-    for (int j = 0; j < 256; j++) {
-        //printf("!! == %f\n",s0[j]);
-        diff = 0.0;
-        minmize = 1.0;
-        for (int i = 0; i < 256; i++) {
-            double pix0 = 1.0 * i / 256;
-            diff = fabs(s0[j] - pix0);
-            //printf("%d == %f\n",i,diff);
-            if (diff < minmize) {
-                minmize = diff;
-                min_number[j] = i;//min_number[j] --> i ;
-            }
-
-        }
-        //printf("%d == %d\n",j,min_number[j]);
-        //	break;
-    }
-    //输出
-    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
-        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
-            r[j][i] = min_number[r[j][i]];
-        }
-    }
-
-    /*统计临近的相同的像素点*/
-    /*计算最终的而结果并画直方图*/
 }
 
 void ChangeTheLuminance() {
@@ -207,175 +172,6 @@ void VisibilityEnhancement() {
         }
     }
 
-}
-
-void HistogramEqualization_g() {
-    //number 统计
-    long n0[256] = {0.0};
-    /*0-255 直方图X3 RGB*/
-    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
-        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
-            n0[g[j][i]]++;
-        }
-    }
-
-    /*0-1/255-...-254/255,1*/
-    double p0[256] = {0.0};
-    for (int i = 0; i < 256; i++)
-        p0[i] = n0[i] / (1.0 * bmpIHeader.bIHeight * bmpIHeader.bIWidth);
-
-    /*n[k]0-255:number*/
-
-    /*Pn[n]*/
-    double s0[256] = {0.0};
-    s0[0] = p0[0];
-    for (int i = 1; i < 256; i++)
-        s0[i] = s0[i - 1] + p0[i];
-//---------------------------------
-    /*s[k]=求和Pn[0+..+k]*/
-    /*找距离s[k]最近的像素点s[x]*/
-    double minmize = 1.0;
-    int min_number[256] = {0};
-    double diff = 0.0;
-    for (int j = 0; j < 256; j++) {
-        //printf("!! == %f\n",s0[j]);
-        diff = 0.0;
-        minmize = 1.0;
-        for (int i = 0; i < 256; i++) {
-            double pix0 = 1.0 * i / 256;
-            diff = fabs(s0[j] - pix0);
-            //printf("%d == %f\n",i,diff);
-            if (diff < minmize) {
-                minmize = diff;
-                min_number[j] = i;//min_number[j] --> i ;
-            }
-
-        }
-        //printf("%d == %d\n",j,min_number[j]);
-        //	break;
-    }
-    //输出
-    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
-        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
-            g[j][i] = min_number[g[j][i]];
-        }
-    }
-
-    /*统计临近的相同的像素点*/
-    /*计算最终的而结果并画直方图*/
-}
-
-void HistogramEqualization_b() {
-    //number 统计
-    long n0[256] = {0};
-    /*0-255 直方图X3 RGB*/
-    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
-        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
-            n0[b[j][i]]++;
-        }
-    }
-
-    /*0-1/255-...-254/255,1*/
-    double p0[256] = {0.0};
-    for (int i = 0; i < 256; i++) {
-        p0[i] = n0[i] / (1.0 * bmpIHeader.bIHeight * bmpIHeader.bIWidth);
-    }
-
-
-    /*n[k]0-255:number*/
-
-    /*Pn[n]*/
-    double s0[256] = {0.0};
-    s0[0] = p0[0];
-    for (int i = 1; i < 256; i++)
-        s0[i] = s0[i - 1] + p0[i];
-//---------------------------------
-    /*s[k]=求和Pn[0+..+k]*/
-    /*找距离s[k]最近的像素点s[x]*/
-    double minmize = 1.0;
-    int min_number[256] = {0};
-    double diff;
-    for (int j = 0; j < 256; j++) {
-        //printf("!! == %f\n",s0[j]);
-        minmize = 1.0;
-        for (int i = 0; i < 256; i++) {
-            double pix0 = 1.0 * i / 256;
-            diff = fabs(s0[j] - pix0);
-            //printf("%d == %f\n",i,diff);
-            if (diff < minmize) {
-                minmize = diff;
-                min_number[j] = i;//min_number[j] --> i ;
-            }
-
-        }
-        //printf("%d == %d\n",j,min_number[j]);
-        //	break;
-    }
-    //输出
-    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
-        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
-            b[j][i] = min_number[b[j][i]];
-        }
-    }
-
-    /*统计临近的相同的像素点*/
-    /*计算最终的而结果并画直方图*/
-}
-
-void HistogramEqualization_Y() {
-    //number 统计
-    long n0[256] = {0.0};
-    /*0-255 直方图X3 RGB*/
-    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
-        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
-            n0[YuvY[j][i]]++;
-        }
-    }
-
-    /*0-1/255-...-254/255,1*/
-    double p0[256] = {0.0};
-    for (int i = 0; i < 256; i++)
-        p0[i] = n0[i] / (1.0 * bmpIHeader.bIHeight * bmpIHeader.bIWidth);
-
-    /*n[k]0-255:number*/
-
-    /*Pn[n]*/
-    double s0[256] = {0.0};
-    s0[0] = p0[0];
-    for (int i = 1; i < 256; i++)
-        s0[i] = s0[i - 1] + p0[i];
-//---------------------------------
-    /*s[k]=求和Pn[0+..+k]*/
-    /*找距离s[k]最近的像素点s[x]*/
-    double minmize = 1.0;
-    int min_number[256] = {0};
-    double diff = 0.0;
-    for (int j = 0; j < 256; j++) {
-        //printf("!! == %f\n",s0[j]);
-        diff = 0.0;
-        minmize = 1.0;
-        for (int i = 0; i < 256; i++) {
-            double pix0 = 1.0 * i / 256;
-            diff = fabs(s0[j] - pix0);
-            //printf("%d == %f\n",i,diff);
-            if (diff < minmize) {
-                minmize = diff;
-                min_number[j] = i;//min_number[j] --> i ;
-            }
-
-        }
-        //printf("%d == %d\n",j,min_number[j]);
-        //	break;
-    }
-    //输出
-    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
-        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
-            YuvY[j][i] = min_number[YuvY[j][i]];
-        }
-    }
-
-    /*统计临近的相同的像素点*/
-    /*计算最终的而结果并画直方图*/
 }
 
 //--------------------------4-----------------------------
