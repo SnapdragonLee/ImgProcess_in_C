@@ -21,8 +21,4 @@ void bmpOutput(FILE *bmpFileOut);
 
 void addHeader(FILE *bmpFileOut);
 
-
-
-
-
 #endif //IMGPROCESS_IN_C_BMPIO_H

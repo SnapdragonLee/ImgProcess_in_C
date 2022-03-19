@@ -54,13 +54,10 @@ void BilateralFilter(int paramenter, double lamda_range, double lamda_color);
 
 void RBF_Bilateral(unsigned char temple[], int x, int y, int paramenter, double lamda_range, double lamda_color);
 
-//============TEST FUNCTION=================//
 void testInputYUV();
 
 void testOutputYUV();
 
 void testRGB();
-
-//=============TEST FUNCTION END============//
 
 #endif //IMGPROCESS_IN_C_ALGOFUNC_H
