@@ -43,8 +43,6 @@ void HistogramEqualization(unsigned char dat[][MAX]) {
         // printf("%d ", recipe[j]);
     }
 
-    dat;
-
 }
 
 void ChangeTheLuminance() {
