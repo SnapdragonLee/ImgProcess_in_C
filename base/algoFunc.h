@@ -54,8 +54,6 @@ void BilateralFilter(int paramenter, double lamda_range, double lamda_color);
 
 void RBF_Bilateral(unsigned char temple[], int x, int y, int paramenter, double lamda_range, double lamda_color);
 
-void testInputYUV();
-
 void testOutputYUV();
 
 void testRGB();

@@ -567,13 +567,6 @@ void BilateralFilter(int paramenter, double lamda_range, double lamda_color) {
 //===========================End=================================
 
 //=====================TEST===========================
-void testInputYUV() {
-    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
-        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
-            printf("%d ", YuvY[j][i]);
-        }
-    }
-}
 
 void testOutputYUV() {
     for (int j = 0; j < bmpIHeader.bIHeight; j++) {
