@@ -33,7 +33,7 @@ void HistogramEqualization(unsigned char dat[][MAX]) {
 
     diff = cdf[cdfMax] - cdf[cdfMin];
     for (i = cdfMin; i <= cdfMax; i++) {
-        recipe[i] = 1.0 * (cdf[i] - cdf[cdfMin]) / diff * 255;
+        recipe[i] = round(1.0 * (cdf[i] - cdf[cdfMin]) / diff * 255);
     }
 
     for (j = 0; j < bmpIHeader.bIHeight; j++) {
