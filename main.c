@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    //headerChange(8, 512, 512);
+    ///headerChange(8, 512, 512);
 
     writeFile(bmpOut);
 
