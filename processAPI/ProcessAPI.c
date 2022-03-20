@@ -5,8 +5,15 @@
 #include "ProcessAPI.h"
 #include "../settings/settings.h"
 
-void linearTransform(unsigned char dat[][MAX]) {
+void linearTransform8(unsigned char r[][MAX], unsigned char g[][MAX], unsigned char b[][MAX], unsigned char dat[][MAX]) {
+    RGB2Gray(r, g, b, dat);
     LinearTransform(dat);
+}
+
+void linearTransform24(unsigned char r[][MAX], unsigned char g[][MAX], unsigned char b[][MAX]) {
+    LinearTransform(r);
+    LinearTransform(g);
+    LinearTransform(b);
 }
 
 void histogramEqualization24(unsigned char r[][MAX], unsigned char g[][MAX], unsigned char b[][MAX]) {
@@ -16,8 +23,5 @@ void histogramEqualization24(unsigned char r[][MAX], unsigned char g[][MAX], uns
 }
 
 void histogramEqualization8(unsigned char gray[][MAX]) {
-    if (bmpIHeader.bIBitCount == 24) {
-        RGB2Gray();
-    }
     HistogramEqualization(gray);
 }

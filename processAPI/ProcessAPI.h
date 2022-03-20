@@ -9,7 +9,9 @@
 
 #include "../base/transferFunc.h"
 
-void linearTransform(unsigned char dat[][MAX]);
+void linearTransform8(unsigned char r[][MAX], unsigned char g[][MAX], unsigned char b[][MAX], unsigned char dat[][MAX]);
+
+void linearTransform24(unsigned char r[][MAX], unsigned char g[][MAX], unsigned char b[][MAX]);
 
 void histogramEqualization24(unsigned char r[][MAX], unsigned char g[][MAX], unsigned char b[][MAX]);
 

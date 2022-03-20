@@ -28,7 +28,9 @@ int main(int argc, char *argv[]) {
      YUV2RGB();
     HistogramEqualization(gray);*/
     //HistogramEqualization24(r, g, b);
-    histogramEqualization8(gray);
+    //histogramEqualization8(gray);
+    linearTransform8(r, g, b, gray);
+
     /******* Add Img Process Algorithm upon *******/
 
     strcpy(SourceFile_Path + strlen(SourceFile_Path) - 4, OutputFile_Down);
