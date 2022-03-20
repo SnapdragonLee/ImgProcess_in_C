@@ -1,3 +1,7 @@
+//
+// Created by SNAPDRAGON_11800H on 3/12/2022.
+//
+
 #include "header.h"
 
 int main(int argc, char *argv[]) {
@@ -17,18 +21,14 @@ int main(int argc, char *argv[]) {
     bmpDataFrame(bmpIn);
 
     /******* Add Img Process Algorithm below *******/
+    //LinearTransform(gray);
 
-    RGB2Gray();
-
-
-   /* RGB2YUV();
-    YUV2Gray();
-    YUV2RGB();*/
-    HistogramEqualization(gray);
-    HistogramEqualization(r);
-    HistogramEqualization(g);
-    HistogramEqualization(b);
-
+    /* RGB2YUV();
+     YUV2Gray();
+     YUV2RGB();
+    HistogramEqualization(gray);*/
+    //HistogramEqualization24(r, g, b);
+    histogramEqualization8(gray);
     /******* Add Img Process Algorithm upon *******/
 
     strcpy(SourceFile_Path + strlen(SourceFile_Path) - 4, OutputFile_Down);

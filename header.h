@@ -6,6 +6,7 @@
 #define IMGPROCESS_IN_C_HEADER_H
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "bmpFileIO/bmpIO.h"

@@ -11,6 +11,8 @@
 
 #include "../settings/settings.h"
 
+void LinearTransform(unsigned char dat[][MAX]);
+
 void HistogramEqualization(unsigned char dat[][MAX]);
 
 void ChangeTheLuminance();

@@ -4,6 +4,38 @@
 
 #include "algoFunc.h"
 
+void LinearTransform(unsigned char dat[][MAX]) {
+    printf("Linea Transform for pages, input a set which contains 2D spot coordinate from 0 to 255\n");
+    char c = 0;
+    c = getchar();
+
+    int x[20], y[20], gray_temp[256], befX = 0, befY = 0, i, j;
+    for (i = 0; c != ']'; i++) {
+        c = getchar();
+        scanf("%d,%d", &x[i], &y[i]);
+        for (j = befX; j <= x[i]; j++) {
+            if (x[i] == befX) {
+                gray_temp[j] = y[i];
+                break;
+            }
+            gray_temp[j] = befY + 1.0 * (y[i] - befY) / (x[i] - befX) * (j - befX);
+        }
+        befX = x[i];
+        befY = y[i];
+        getchar();
+        c = getchar();
+    }
+
+    for (j = 0; j < bmpIHeader.bIHeight; j++) {
+        for (i = 0; i < bmpIHeader.bIWidth; i++) {
+            dat[j][i] = gray_temp[dat[j][i]];
+        }
+        // printf("%d ", recipe[j]);
+    }
+
+
+}
+
 void HistogramEqualization(unsigned char dat[][MAX]) {
     int cdf[256] = {0}, recipe[256], i, j;
     for (j = 0; j < bmpIHeader.bIHeight; j++) {
@@ -109,7 +141,7 @@ void Erosion() {
         }
     }
 
-    /*叠加原图*/
+    /*叠加*/
     for (int j = 0; j < bmpIHeader.bIHeight; j++) {
         for (int i = 0; i < bmpIHeader.bIWidth; i++) {
             YuvY[j][i] = 255;
@@ -130,7 +162,7 @@ void Erosion() {
                         Istrue = 1;//不全等
                 }
             //printf("%d",Istrue);
-            /*大概，YUV中黑色是。。。Y=0 （Ｔ＾Ｔ）*/
+            /*大概，YUV中黑色是Y=0*/
             if (Istrue == 0)
                 YuvY[j + centre][i + centre] = 0;//所有情况都成立！
 
@@ -152,7 +184,6 @@ void Opening_Closing(char dowhat) {
         printf("Opening_Closing fail!\n");
 }
 
-//============================3==============================
 void VisibilityEnhancement() {
     int maxLumnance = 0;
     for (int j = 0; j < bmpIHeader.bIHeight; j++) {
@@ -172,7 +203,6 @@ void VisibilityEnhancement() {
 
 }
 
-//--------------------------4-----------------------------
 void translation(int sizeX, int sizeY, int sizeX1, int sizeY1, int x, int y) {
     int translatingMatrix[3][3] = {{1, 0, x},
                                    {0, 1, y},
@@ -319,15 +349,13 @@ void Scaling(float ratioX, float ratioY) {
             }
         }
     }
-
 }
 
 double Gaussian(int radial, double lamda) {
     return exp(-pow(radial, 2) / (2 * pow(lamda, 2)));
 }
 
-void RBF_Gaussian(unsigned char temple[], int x, int y, int paramenter)//3
-{
+void RBF_Gaussian(unsigned char temple[], int x, int y, int paramenter) {
     /*Paramenter is used to control how many points are included included in this process*/
     //L2 fomular
     double lamda = 0.4;//paramenter_X
@@ -412,7 +440,6 @@ void Shearing(float dx, float dy) {
 
 }
 
-//------------------------------5--------------------------------
 void MeanFilter(unsigned char temple[], int x, int y, int paramenter)//给出该点的准确值=1
 {
     double wr = 0.0, wg = 0.0, wb = 0.0;
@@ -503,7 +530,6 @@ void LaplacianFilter_Y(double paramenter) {
 
 }
 
-//--------------------------6--------------------------------
 void RBF_Bilateral(unsigned char temple[], int x, int y, int paramenter, double lamda_range, double lamda_color) {
     double w0_r = 0.0;
     double w0_g = 0.0;
@@ -511,7 +537,7 @@ void RBF_Bilateral(unsigned char temple[], int x, int y, int paramenter, double 
     for (int y0 = y - paramenter; y0 <= y + paramenter; y0++) {
         for (int x0 = x - paramenter; x0 <= x + paramenter; x0++) {
             if (x0 == x && y0 == y) continue;
-            double radial = abs(x - x0) + abs(y - y0);//sqrt(pow((x-x0),2)+pow((y-y0),2));
+            double radial = abs(x - x0) + abs(y - y0); // sqrt(pow((x-x0),2)+pow((y-y0),2));
             double color_r = abs(r[y][x] - r[y0][x0]);
             double color_g = abs(g[y][x] - g[y0][x0]);
             double color_b = abs(b[y][x] - b[y0][x0]);
@@ -562,10 +588,6 @@ void BilateralFilter(int paramenter, double lamda_range, double lamda_color) {
     printf("\aIt costs %02d:%02d \n", duration / 60, duration % 60);
 }
 
-//===========================End=================================
-
-//=====================TEST===========================
-
 void testOutputYUV() {
     for (int j = 0; j < bmpIHeader.bIHeight; j++) {
         for (int i = 0; i < bmpIHeader.bIWidth; i++) {
@@ -581,7 +603,5 @@ void testRGB() {
         }
     }
 }
-
-//=====================TEST END=================
 
 
