@@ -155,3 +155,7 @@ Then run with args[], filled with filename:
 ```bash
 ./ImgProcess_in_C example/lena2.bmp
 ```
+
+
+
+该项目已经在 Linux/Windows 通过验证。
