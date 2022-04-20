@@ -125,7 +125,7 @@ typedef struct bmpPixelInfo {
 
 `settings/` 存储图像的信息头，颜色板，各种参数信息，不建议更改。
 
-`processAPI/` 封装的 API 函数，可以根据 `\base` 目录下的任意底层函数进行调用，可以自行更改。
+`processAPI/` 封装的 API 函数，可以根据 `base/` 目录下的任意底层函数进行调用，可以自行更改。
 
 `bmpFileIO/` bmp 24bit 8bit 图像的互转（包括颜色板）、输入输出等，不建议更改。
 
