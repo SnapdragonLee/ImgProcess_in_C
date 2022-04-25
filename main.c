@@ -23,13 +23,12 @@ int main(int argc, char *argv[]) {
     /******* Add Img Process Algorithm below *******/
     //LinearTransform(gray);
 
-    /* RGB2YUV();
-     YUV2Gray();
-     YUV2RGB();
-    HistogramEqualization(gray);*/
-    //HistogramEqualization24(r, g, b);
+    //RGB2YUV(r, g, b, y, u, v);
+    //YUV2Gray(y, u, v, gray);
+    //YUV2RGB(y, u, v, r, g, b);
+    //histogramEqualization24(r, g, b);
     //histogramEqualization8(gray);
-    linearTransform8(r, g, b, gray);
+    //linearTransform8(r, g, b, gray);
 
     /******* Add Img Process Algorithm upon *******/
 
@@ -41,6 +40,8 @@ int main(int argc, char *argv[]) {
     }
 
     headerChange(8, 512, 512);
+    // output will get gray metrix when activate headerChange, otherwise get rgb metrix
+
 
     writeFile(bmpOut);
 

@@ -11,10 +11,10 @@ if __name__ == "__main__":
     # magnitude_spectrum = 20*np.log(np.abs(f))
     magnitude_spectrum = np.abs(f)
 
-    plt.subplot(),plt.imshow(magnitude_spectrum, cmap='gray')
+    plt.subplot(), plt.imshow(magnitude_spectrum, cmap='gray')
 
     f_ishift = np.fft.ifftshift(f)
     img_back = np.fft.ifft2(f)
     img_back = np.abs(img_back)
 
-    plt.imshow(img_back, cmap = 'gray')
+    # plt.imshow(img_back, cmap = 'gray')
