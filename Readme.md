@@ -1,10 +1,14 @@
+[TOC]
+
 # ImgProcess_in_C
 
 用纯 C 语言完成的一套图像处理流程。包括 bmp 的文件 IO、rgb数据的处理、图像直方图均衡、图像灰度线性拉伸等等。
 
 
 
-## 1 读取 BMP 图像
+## 功能介绍
+
+### 1 读取 BMP 图像
 
 用 C 语言读取 BMP 图像难度不大，整体要搞定这种文件的文件头，以及信息头、调色板等内容。暂时完成了 24bit 与 8bit 的读取、互转与存取。
 
@@ -61,7 +65,7 @@ typedef struct bmpPixelInfo {
 
 另外，由于 24-bit 的真彩 BMP 文件不会有调色板的问题，因此在 24bit 转换到 8bit 图像的时候需要加入调色板的信息，我这里直接加入了全灰度色板 (0-255)，如有需要可以选择更改 `bmpFileIO/bmpBoard.profile`，注意要用二进制打开该文件。
 
-![lena2-Gray24](example/lena2-Gray24.bmp)
+![lena2-Gray24](example/lena2-RGB24-Gray.bmp)
 
 <div align = "center">lena 24bit gray</div>
 
@@ -75,7 +79,7 @@ typedef struct bmpPixelInfo {
 
 
 
-## 直方图均衡
+### 2 直方图均衡
 
 图像直方图均衡，对于背景和前景都太亮或者太暗的图像非常有用，这种方法可以带来灰度图图像中曝光过度或者曝光不足照片中更好的细节。这种方法的一个缺点是它对处理的数据不加选择，它可能会增加背景噪声的对比度并且降低有用信号的对比度。
 
@@ -85,7 +89,7 @@ typedef struct bmpPixelInfo {
 
 
 
-![lena2-HistogramEqualization8](example/lena2-HistogramEqualization8.bmp)
+![lena2-HistogramEqualization8](example/lena2-Gray8-HistogramEqualization.bmp)
 
 <div align = "center">lena 8bit HistogramEqualization</div>
 
@@ -93,13 +97,13 @@ typedef struct bmpPixelInfo {
 
 
 
-![lena2-HistogramEqualization24](example/lena2-HistogramEqualization24.bmp)
+![lena2-HistogramEqualization24](example/lena2-RGB24-HistogramEqualization.bmp)
 
 <div align = "center">lena 24bit HistogramEqualization</div>
 
 
 
-## 线性变换
+### 3 线性变换
 
 图像的线性变换，要求为有一个分段函数建立在各个通道上，并将原先的通道值通过新的函数映射成新的。这里做了一个简化，程序可以接收一个序列包含在中括号 `[]` 内，序列的内容为分段函数的拐点，一次最多可以接受 20 个拐点（必须包含 0 和 255的点，且需要从小到大排列）。
 
@@ -109,15 +113,117 @@ typedef struct bmpPixelInfo {
 
 则可以得到如下灰度图结果：
 
-![lena2-Linea Transform8](example/lena2-Linea%20Transform8.bmp)
+![lena2-Linea Transform8](example/lena2-Gray8-LineaTransform.bmp)
 
 <div align = "center">lena 8bit LineaTransform</div>
 
 当然，也可以得到如下真彩图结果：
 
-![lena2-LineaTransform24](example/lena2-LineaTransform24.bmp)
+![lena2-LineaTransform24](example/lena2-RGB24-LineaTransform.bmp)
 
 <div align = "center">lena 24bit LineaTransform</div>
+
+
+
+
+
+### 4 傅里叶变换
+
+![img](Readme.assets/u=3088023589,2492991774&fm=253&fmt=auto&app=138&f=JPEG.jpeg)
+
+
+
+<div align = "center">图示原理</div>
+
+关于傅里叶变换，这是一张比较经典的图了，从时域频域拆解信号。
+
+
+
+搞明白 FFT，**首先要搞明白 DFT**。这段课件中有详细的阐述，在这里只给出一个 DFT 的公式，其中的 $X_k$ 、 $x_n$ 为一列复数序列：
+
+![img](Readme.assets/18b0e4c82f095e3789e51ad8c2c6685306b5662b.svg)
+
+直接通过公式求解，需要暴力的进行 $O(N^2)$ 时间复杂度得到变换后的结果，这是无法接受的，尤其是面对响应速度极快的应用场景时是一个灾难。那我们就需要 FFT 进行加速，把时间复杂度压下来。
+
+
+
+我在底层函数中完成的是基于 Cooley–Tukey 的 FFT 算法，其因中文名形象地称为蝶形算法而著名。我们用 $N$ 次单位根 ${\displaystyle W_{N}}$ 来表示 ${\displaystyle e^{-j{\frac {2\pi }{N}}}}$。
+
+${\displaystyle W_{N}}$ 的性质：
+
+1. 周期性，${\displaystyle W_{N}}$ 具有周期 ${\displaystyle N}$，即 ${\displaystyle W_{N}^{k+N}=W_{N}^{k}}$ 
+
+2. 对称性：${\displaystyle W_{N}^{k+{\frac {N}{2}}}=-W_{N}^{k}}$。
+
+3. 若 ${\displaystyle m}$ 是 ${\displaystyle N}$ 的约数，${\displaystyle W_{N}^{mkn}=W_{\frac {N}{m}}^{kn}}$ 。
+
+为了简单起见，我们下面设待变换序列长度 ${\displaystyle n=2^{r}}$。根据上面单位根的对称性，求级数 ${\displaystyle y_{k}=\sum _{n=0}^{N-1}W_{N}^{kn}x_{n}}$ 时，可以将求和区间分为两部分：
+
+${\displaystyle {\begin{matrix}y_{k}=\sum _{n=2t}W_{N}^{kn}x_{n}+\sum _{n=2t+1}W_{N}^{kn}x_{n}\\=\sum _{t}W_{\frac {N}{2}}^{kt}x_{2t}+W_{N}^{k}\sum _{t}W_{\frac {N}{2}}^{kt}x_{2t+1}\\=F_{even}(k)+W_{N}^{k}F_{odd}(k)&&&&&&(i\in \mathbb {Z} )\end{matrix}}}$
+
+${\displaystyle F_{odd}(k)}$ 和 ${\displaystyle F_{even}(k)}$是两个分别关于序列 ${\displaystyle \left\{x_{n}\right\}_{0}^{N-1}}$ 奇数号和偶数号序列 $N/2$ 点变换。由此式只能计算出 ${\displaystyle y_{k}}$ 的前 $N/2$ 个点，对于后 $N/2$ 个点，注意 ${\displaystyle F_{odd}(k)}$ 和 ${\displaystyle F_{even}(k)}$ 都是周期为 $N/2$ 的函数，由单位根的对称性，于是有以下变换公式：
+
+${\displaystyle y_{k+{\frac {N}{2}}}=F_{even}(k)-W_{N}^{k}F_{odd}(k)}$
+
+${\displaystyle y_{k}=F_{even}(k)+W_{N}^{k}F_{odd}(k)}$
+
+
+
+这样，一个 $N$ 点变换就分解成了两个 $N/2$ 点变换。这是一个基本的分治算法，照这样可继续分解下去。根据算法分析原理中的 **主定理扩展原则** 不难分析出此时算法的时间复杂度符合 ${\displaystyle \mathrm {O} (N\log N)}$ 复杂度的判定。
+
+上述的算法原理，适用于所有的离散信号采样序列。对于一个二维离散信号，需要进行转换。从一维得到二维其实不难，更高维度也是一样，每一个维度做一次 FFT 即可完成多维度的信号处理。对于二维图像，先对输入的图像 $m * n$ 的第一个维度先做一维 **fft**，把结果存到一个$m*n$ 的矩阵中，再对矩阵的另一个维度做一次 fft。这时得到的结果就是二维图像 $m*n$ 的快速傅里叶变换的输出，大小为 $height *width *depth$。
+
+
+
+![lena2-LineaTransform24](example/lena2-Gray8-ZeroPhase.bmp)
+
+<div align = "center">零相位时的快速傅里叶变换输出</div>
+
+
+
+![lena2-LineaTransform24](example/lena2-Gray8-FFTfrequency.bmp)
+
+<div align = "center">FFT后高频居中的频域图像输出</div>
+
+
+
+![lena2-LineaTransform24](example/lena2-Gray8-FFTback.bmp)
+
+<div align = "center">FFT变换后直接逆变换输出</div>
+
+
+
+![lena2-LineaTransform24](example/lena2-RGB24-ZeroPhase.bmp)
+
+<div align = "center">对RGB三个通道均进行FFT后高频居中叠加显示</div>
+
+
+
+### 5 余弦变换
+
+全称为离散余弦变换 (DCT)。DCT 变换本身是无损的，但是在图像编码等领域给接下来的量化、哈弗曼编码等创造了很好的条件，同时，由于DCT变换时对称的，所以，我们可以在量化编码后利用DCT反变换，在接收端恢复原始的图像信息。
+
+可见以下公式：
+
+![311243394542578](Readme.assets/311243394542578.png)
+
+
+
+二维余弦变换的公式，由于推导过程写起来比较复杂，可以参见以下的公式：
+
+![equation](Readme.assets/equation.svg)
+
+
+
+我实现的 DCT 没有经过蝶形算法优化，时间复杂度为 $O(N^2)$，可以参考相关资料进行更细致的优化。
+
+
+
+![image-20220425201856671](Readme.assets/image-20220425201856671.png)
+
+<div align = "center">余弦变换输出显示</div>
+
+
 
 
 
@@ -129,7 +235,7 @@ typedef struct bmpPixelInfo {
 
 `bmpFileIO/` bmp 24bit 8bit 图像的互转（包括颜色板）、输入输出等，不建议更改。
 
-`base/` 图像底层的函数，`base/transferFunc.h` 为颜色空间转换底层函数，`base/algoFunc.h` 为各种图像处理算法的底层函数。
+`base/` 图像底层的函数，`base/transferFunc.h` 为颜色空间转换底层函数，`base/algoFunc.h` 为各种图像处理算法的底层函数，`base/tf.h` 为离散余弦（逆）变换、离散傅里叶（逆）变换等底层函数，`base/data.h` 为数据转换专用的一组头文件。
 
 `example/` 为各种调试图片输出，可根据命名查看处理后的结果。
 
@@ -150,7 +256,7 @@ make
 
 
 
-Then run with args[], filled with filename:
+Then run with args[ ], filled with filename:
 
 ```bash
 ./ImgProcess_in_C example/lena2.bmp
@@ -158,4 +264,6 @@ Then run with args[], filled with filename:
 
 
 
-该项目已经在 Linux/Windows 通过验证。
+该工具没有做相关的命令行运行工具，用户需要自行在算法加注区域自行填入相关的操作函数。
+
+**该项目已经在 Linux/Windows 通过验证。**

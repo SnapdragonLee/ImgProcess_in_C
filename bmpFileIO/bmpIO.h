@@ -5,6 +5,12 @@
 #ifndef IMGPROCESS_IN_C_BMPIO_H
 #define IMGPROCESS_IN_C_BMPIO_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "../settings/settings.h"
+
 void readFile(FILE *bmpFileIn);
 
 void bmpFHeaderRead(FILE *bmpFileIn);

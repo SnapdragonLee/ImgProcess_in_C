@@ -10,8 +10,9 @@
 #include <string.h>
 
 #include "bmpFileIO/bmpIO.h"
-#include "processAPI/ProcessAPI.h"
+#include "processAPI/processAPI.h"
 #include "settings/settings.h"
+#include "base/tf.h"
 #include "base/algoFunc.h"
 #include "base/transferFunc.h"
 

@@ -4,6 +4,8 @@
 
 #include "header.h"
 
+#pragma GCC optimize ("O3")
+
 int main(int argc, char *argv[]) {
     if (argc > 1) {
         SourceFile_Path = OutputFile_Path = argv[1];
@@ -23,11 +25,30 @@ int main(int argc, char *argv[]) {
     /******* Add Img Process Algorithm below *******/
     //LinearTransform(gray);
 
+    //RGB2Gray(r, g, b, gray);
     //RGB2YUV(r, g, b, y, u, v);
     //YUV2Gray(y, u, v, gray);
     //YUV2RGB(y, u, v, r, g, b);
     //histogramEqualization24(r, g, b);
     //histogramEqualization8(gray);
+
+    //dctinit(bmpIHeader.bIHeight, bmpIHeader.bIWidth);
+    //dct2(gray, dat_fl, bmpIHeader.bIHeight, bmpIHeader.bIWidth);
+    //idct2(gray, dat_fl, bmpIHeader.bIHeight, bmpIHeader.bIWidth);
+
+    fftinit(bmpIHeader.bIHeight, bmpIHeader.bIWidth);
+    // fft2(gray, dat_fl, bmpIHeader.bIHeight, bmpIHeader.bIWidth);
+
+
+    fft2_freq(r, dat_fl, bmpIHeader.bIHeight, bmpIHeader.bIWidth, 150);
+    fft2_freq(g, dat_fl, bmpIHeader.bIHeight, bmpIHeader.bIWidth, 150);
+    fft2_freq(b, dat_fl, bmpIHeader.bIHeight, bmpIHeader.bIWidth, 150);
+
+
+    //fft2_freq(gray, dat_fl, bmpIHeader.bIHeight, bmpIHeader.bIWidth, 200);
+
+    //ifft2(gray, dat_fl, bmpIHeader.bIHeight, bmpIHeader.bIWidth);
+
     //linearTransform8(r, g, b, gray);
 
     /******* Add Img Process Algorithm upon *******/
@@ -39,7 +60,7 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    headerChange(8, 512, 512);
+    //headerChange(8, 512, 512);
     // output will get gray metrix when activate headerChange, otherwise get rgb metrix
 
 
