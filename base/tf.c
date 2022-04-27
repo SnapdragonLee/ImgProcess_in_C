@@ -4,6 +4,15 @@
 
 #include "tf.h"
 
+float **dat_fl;
+float *dat_fl_l;
+
+float **dat_fl, **matimg, **modulus;
+float *mat_line, *mod_line;
+
+float **matdct;
+float *dct_line;
+
 void fftinit(int height, int width) {
     matimg = (float **) malloc(sizeof(float *) * height);
     mat_line = (float *) malloc(sizeof(float) * width * height);

@@ -18,14 +18,14 @@
                        typeof(y) _y = y; \
                        x = _y; y = _x;   \
                       } while(0)
-float **dat_fl;
-float *dat_fl_l;
+extern float **dat_fl;
+extern float *dat_fl_l;
 
-float **dat_fl, **matimg, **modulus;
-float *mat_line, *mod_line;
+extern float **dat_fl, **matimg, **modulus;
+extern float *mat_line, *mod_line;
 
-float **matdct;
-float *dct_line;
+extern float **matdct;
+extern float *dct_line;
 
 void fftinit(int height, int width);
 
