@@ -147,31 +147,31 @@ typedef struct bmpPixelInfo {
 
 
 
-我在底层函数中完成的是基于 Cooley–Tukey 的 FFT 算法，其因中文名形象地称为蝶形算法而著名。我们用 $N$ 次单位根 ${\displaystyle W_{N}}$ 来表示 ${\displaystyle e^{-j{\frac {2\pi }{N}}}}$。
+我在底层函数中完成的是基于 Cooley–Tukey 的 FFT 算法，其因中文名形象地称为蝶形算法而著名。我们用 $N$ 次单位根 ${W_{N}}$ 来表示 ${e^{-j{\frac {2\pi }{N}}}}$。
 
-${\displaystyle W_{N}}$ 的性质：
+${W_{N}}$ 的性质：
 
-1. 周期性，${\displaystyle W_{N}}$ 具有周期 ${\displaystyle N}$，即 ${\displaystyle W_{N}^{k+N}=W_{N}^{k}}$ 
+1. 周期性，${W_{N}}$ 具有周期 ${N}$，即 ${W_{N}^{k+N}=W_{N}^{k}}$ 
 
-2. 对称性：${\displaystyle W_{N}^{k+{\frac {N}{2}}}=-W_{N}^{k}}$。
+2. 对称性：${W_{N}^{k+{\frac {N}{2}}}=-W_{N}^{k}}$。
 
-3. 若 ${\displaystyle m}$ 是 ${\displaystyle N}$ 的约数，${\displaystyle W_{N}^{mkn}=W_{\frac {N}{m}}^{kn}}$ 。
+3. 若 ${m}$ 是 ${N}$ 的约数，${W_{N}^{mkn}=W_{\frac {N}{m}}^{kn}}$ 。
 
-为了简单起见，我们下面设待变换序列长度 ${\displaystyle n=2^{r}}$。根据上面单位根的对称性，求级数 ${\displaystyle y_{k}=\sum _{n=0}^{N-1}W_{N}^{kn}x_{n}}$ 时，可以将求和区间分为两部分：
+为了简单起见，我们下面设待变换序列长度 ${n=2^{r}}$。根据上面单位根的对称性，求级数 ${y_{k}=\sum _{n=0}^{N-1}W_{N}^{kn}x_{n}}$ 时，可以将求和区间分为两部分：
 
-${\displaystyle {\begin{matrix}y_{k}=\sum _{n=2t}W_{N}^{kn}x_{n}+\sum _{n=2t+1}W_{N}^{kn}x_{n}\\=\sum _{t}W_{\frac {N}{2}}^{kt}x_{2t}+W_{N}^{k}\sum _{t}W_{\frac {N}{2}}^{kt}x_{2t+1}\\=F_{even}(k)+W_{N}^{k}F_{odd}(k)&&&&&&(i\in \mathbb {Z} )\end{matrix}}}$
+${{\begin{matrix}y_{k}=\sum _{n=2t}W_{N}^{kn}x_{n}+\sum _{n=2t+1}W_{N}^{kn}x_{n}\\=\sum _{t}W_{\frac {N}{2}}^{kt}x_{2t}+W_{N}^{k}\sum _{t}W_{\frac {N}{2}}^{kt}x_{2t+1}\\=F_{even}(k)+W_{N}^{k}F_{odd}(k)&&&&&&(i\in \mathbb {Z} )\end{matrix}}}$
 
-${\displaystyle F_{odd}(k)}$ 和 ${\displaystyle F_{even}(k)}$是两个分别关于序列 ${\displaystyle \left\{x_{n}\right\}_{0}^{N-1}}$ 奇数号和偶数号序列 $N/2$ 点变换。由此式只能计算出 ${\displaystyle y_{k}}$ 的前 $N/2$ 个点，对于后 $N/2$ 个点，注意 ${\displaystyle F_{odd}(k)}$ 和 ${\displaystyle F_{even}(k)}$ 都是周期为 $N/2$ 的函数，由单位根的对称性，于是有以下变换公式：
+${F_{odd}(k)}$ 和 ${F_{even}(k)}$是两个分别关于序列 ${\left\{x_{n}\right\}_{0}^{N-1}}$ 奇数号和偶数号序列 $N/2$ 点变换。由此式只能计算出 ${y_{k}}$ 的前 $N/2$ 个点，对于后 $N/2$ 个点，注意 ${F_{odd}(k)}$ 和 ${F_{even}(k)}$ 都是周期为 $N/2$ 的函数，由单位根的对称性，于是有以下变换公式：
 
-${\displaystyle y_{k+{\frac {N}{2}}}=F_{even}(k)-W_{N}^{k}F_{odd}(k)}$
+${y_{k+{\frac {N}{2}}}=F_{even}(k)-W_{N}^{k}F_{odd}(k)}$
 
-${\displaystyle y_{k}=F_{even}(k)+W_{N}^{k}F_{odd}(k)}$
+${y_{k}=F_{even}(k)+W_{N}^{k}F_{odd}(k)}$
 
 
 
-这样，一个 $N$ 点变换就分解成了两个 $N/2$ 点变换。这是一个基本的分治算法，照这样可继续分解下去。根据算法分析原理中的 **主定理扩展原则** 不难分析出此时算法的时间复杂度符合 ${\displaystyle \mathrm {O} (N\log N)}$ 复杂度的判定。
+这样，一个 $N$ 点变换就分解成了两个 $N/2$ 点变换。这是一个基本的分治算法，照这样可继续分解下去。根据算法分析原理中的 **主定理扩展原则** 不难分析出此时算法的时间复杂度符合 ${\mathrm {O} (N\log N)}$ 复杂度的判定。
 
-上述的算法原理，适用于所有的离散信号采样序列。对于一个二维离散信号，需要进行转换。从一维得到二维其实不难，更高维度也是一样，每一个维度做一次 FFT 即可完成多维度的信号处理。对于二维图像，先对输入的图像 $m * n$ 的第一个维度先做一维 **fft**，把结果存到一个$m*n$ 的矩阵中，再对矩阵的另一个维度做一次 fft。这时得到的结果就是二维图像 $m*n$ 的快速傅里叶变换的输出，大小为 $height *width *depth$。
+上述的算法原理，适用于所有的离散信号采样序列。对于一个二维离散信号，需要进行转换。从一维得到二维其实不难，更高维度也是一样，每一个维度做一次 FFT 即可完成多维度的信号处理。对于二维图像，先对输入的图像 $m * n$ 的第一个维度先做一维 **fft**，把结果存到一个 $m*n$ 的矩阵中，再对矩阵的另一个维度做一次 fft。这时得到的结果就是二维图像 $m * n$ 的快速傅里叶变换的输出，大小为 $height * width * depth$。
 
 
 
@@ -219,7 +219,7 @@ ${\displaystyle y_{k}=F_{even}(k)+W_{N}^{k}F_{odd}(k)}$
 
 
 
-![image-20220425201856671](Readme.assets/image-20220425201856671.png)
+![image-20220428154945560](Readme.assets/image-20220428154945560.png)
 
 <div align = "center">余弦变换输出显示</div>
 
