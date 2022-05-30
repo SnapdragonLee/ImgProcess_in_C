@@ -263,6 +263,8 @@ ${y_{k}=F_{even}(k)+W_{N}^{k}F_{odd}(k)}$
 
 `base/` 图像底层的函数，`base/transferFunc.h` 为颜色空间转换底层函数，`base/algoFunc.h` 为各种图像处理算法的底层函数，`base/tf.h` 为离散余弦（逆）变换、离散傅里叶（逆）变换等底层函数，`base/data.h` 为数据转换专用的一组头文件。
 
+`jpgTransfer/` 是还未整理的 jpeg 压缩函数，是单独的一种测试方式，稍后会整合到整体的 API 中。
+
 `example/` 为各种调试图片输出，可根据命名查看处理后的结果。
 
 
