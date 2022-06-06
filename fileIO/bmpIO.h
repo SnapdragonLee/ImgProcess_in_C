@@ -1,0 +1,30 @@
+//
+// Created by SNAPDRAGON_11800H on 3/11/2022.
+//
+
+#ifndef IMGPROCESS_IN_C_BMPIO_H
+#define IMGPROCESS_IN_C_BMPIO_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "../settings/settings.h"
+
+void readFile(FILE *bmpFileIn);
+
+void bmpFHeaderRead(FILE *bmpFileIn);
+
+void bmpIHeaderRead(FILE *bmpFileIn);
+
+void bmpDataFrame(FILE *bmpFileIn);
+
+void headerChange(int bitCount, int height, int width);
+
+void writeFile(FILE *bmpFileOut);
+
+void bmpOutput(FILE *bmpFileOut);
+
+void addHeader(FILE *bmpFileOut);
+
+#endif //IMGPROCESS_IN_C_BMPIO_H

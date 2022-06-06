@@ -21,4 +21,4 @@ unsigned char gray[MAX][MAX];
 
 char *SourceFile_Path, *OutputFile_Path;
 const char *OutputFile_Down = "-output.bmp";
-const char *BmpBoard = "../bmpFileIO/bmpBoard.profile";
+const char *BmpBoard = "../fileIO/bmpBoard.profile";

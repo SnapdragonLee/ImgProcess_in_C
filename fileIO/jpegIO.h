@@ -1,0 +1,8 @@
+//
+// Created by SNAPDRAGON_11800H on 6/6/2022.
+//
+
+#ifndef IMGPROCESS_IN_C_JPEGIO_H
+#define IMGPROCESS_IN_C_JPEGIO_H
+
+#endif //IMGPROCESS_IN_C_JPEGIO_H

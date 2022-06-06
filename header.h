@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "bmpFileIO/bmpIO.h"
+#include "fileIO/bmpIO.h"
 #include "processAPI/processAPI.h"
 #include "settings/settings.h"
 #include "base/tf.h"
