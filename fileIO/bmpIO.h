@@ -11,20 +11,23 @@
 
 #include "../settings/settings.h"
 
-void readFile(FILE *bmpFileIn);
+void readBMPFile(FILE *bmpFileIn);
+
+void writeBMPFile(FILE *bmpFileOut);
 
 void bmpFHeaderRead(FILE *bmpFileIn);
 
 void bmpIHeaderRead(FILE *bmpFileIn);
 
+void skipPixelInfo();
+
 void bmpDataFrame(FILE *bmpFileIn);
 
 void headerChange(int bitCount, int height, int width);
 
-void writeFile(FILE *bmpFileOut);
+void addHeader(FILE *bmpFileOut);
 
 void bmpOutput(FILE *bmpFileOut);
 
-void addHeader(FILE *bmpFileOut);
 
 #endif //IMGPROCESS_IN_C_BMPIO_H

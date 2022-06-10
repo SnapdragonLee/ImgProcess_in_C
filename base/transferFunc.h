@@ -15,6 +15,9 @@ void RGB2Gray(unsigned char r[][MAX], unsigned char g[][MAX], unsigned char b[][
 void RGB2YUV(unsigned char r[][MAX], unsigned char g[][MAX], unsigned char b[][MAX], unsigned char YuvY[][MAX],
              unsigned char U[][MAX], unsigned char V[][MAX]);
 
+void RGB2YCbCr(unsigned char r[][MAX], unsigned char g[][MAX], unsigned char b[][MAX], unsigned char YCbCrY[][MAX],
+             unsigned char Cb[][MAX], unsigned char Cr[][MAX]);
+
 void YUV2Gray(unsigned char YuvY[][MAX], unsigned char U[][MAX], unsigned char V[][MAX], unsigned char r[][MAX],
               unsigned char g[][MAX], unsigned char b[][MAX]);
 

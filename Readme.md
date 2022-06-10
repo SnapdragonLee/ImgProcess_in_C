@@ -6,6 +6,12 @@
 
 
 
+***由于每个 API 的使用都可能配套其它的先行初始化语句，我尽可能的将底层的 API 封装了，如果还会出现问题，可以发起 issue 进行提问，我有时间就会进行解答。***
+
+***本项目地址：[SnapdragonLee/ImgProcess_in_C: C-Based Image Processing Repo (github.com)](https://github.com/SnapdragonLee/ImgProcess_in_C)***
+
+
+
 ## 功能介绍
 
 ### 1 读取 BMP 图像
@@ -315,19 +321,19 @@ JPEG 算法提供了两张标准的量化系数矩阵，分别用于处理亮度
 
 `settings/` 存储图像的信息头，颜色板，各种参数信息，不建议更改。
 
-`processAPI/` 封装的 API 函数，可以根据 `base/` 目录下的任意底层函数进行调用，可以自行更改。
+`processAPI/` 封装的 API 函数，可以根据 `base/` 目录下的任意底层函数进行调用，可以自行更改。其中新加入的 jpeg格式转换由于较为复杂，不建议对该 API 进行更改。
 
-`FileIO/` bmp 24bit 8bit 图像的互转（包括颜色板）、输入输出等，不建议更改。后面会加入 jpeg 图片格式的相关函数。
+`FileIO/` bmp 24bit 8bit 图像的互转（包括颜色板）、输入输出等，不建议更改，另外还支持 Jpeg 图片格式输出的函数。
 
-`base/` 图像底层的函数，`base/transferFunc.h` 为颜色空间转换底层函数，`base/algoFunc.h` 为各种图像处理算法的底层函数，`base/tf.h` 为离散余弦（逆）变换、离散傅里叶（逆）变换等底层函数，`base/data.h` 为数据转换专用的一组头文件。
-
-`jpgTransfer/` 是还未整理的 jpeg 压缩函数，是单独的一种测试方式，稍后会整合到整体的 API 中。
+`base/` 图像底层的函数，`base/transferFunc.h` 为颜色空间转换底层函数，`base/algoFunc.h` 为各种色彩空间下图像处理算法的底层函数，`base/tf.h` 为离散余弦（逆）变换、离散傅里叶（逆）变换等底层函数，`base/data.h` 为数据转换专用的一组头文件。
 
 `example/` 为各种调试图片输出，可根据命名查看处理后的结果。
 
+`testing/` 为测试 fft 时的工具，为 Python 脚本，可以用其对比本项目输出的 fft 结果。
 
 
-当开始测试的时候，注意在 `main.c` 的算法区域填入自己封装的 API，用来测试相关的性能和正确性。
+
+当开始使用的时候，如果不涉及 bmp 格式转换，注意在 `main.c` 的算法区域填入自己封装的 API，用来测试相关的性能和正确性，如果你需要转换成 jpeg 格式输出，请将 bmp 格式输出的函数注释掉，改用 `jpeg_exp_write()`，程序会自动将 RGB 全局数组中的数据转换成 jpeg 格式。
 
 
 
@@ -351,5 +357,7 @@ Then run with args[ ], filled with filename:
 
 
 该工具没有做相关的命令行运行工具，用户需要自行在算法加注区域自行填入相关的操作函数。
+
+
 
 **该项目所有功能已经在 Linux/Windows 通过验证**

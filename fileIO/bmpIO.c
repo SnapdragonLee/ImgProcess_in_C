@@ -10,13 +10,15 @@ bmpPixelInfo bmpPx;
 
 unsigned char *otherInfo = NULL;
 
-void skipPixelInfo();
-
-void readFile(FILE *bmpFileIn) {
+void readBMPFile(FILE *bmpFileIn) {
     bmpFHeaderRead(bmpFileIn);
     bmpIHeaderRead(bmpFileIn);
-
     skipPixelInfo(bmpFileIn);
+}
+
+void writeBMPFile(FILE *bmpFileOut) {
+    addHeader(bmpFileOut);
+    bmpOutput(bmpFileOut);
 }
 
 
@@ -105,12 +107,6 @@ void bmpDataFrame(FILE *bmpData) {
         default:
             printf("Cannot process %u bitCount, please retry with other file", bmpIHeader.bIBitCount);
     }
-}
-
-void writeFile(FILE *bmpFileOut) {
-    addHeader(bmpFileOut);
-
-    bmpOutput(bmpFileOut);
 }
 
 void headerChange(int bitCount, int height, int width) {

@@ -35,6 +35,17 @@ void YUV2Gray(unsigned char YuvY[][MAX], unsigned char U[][MAX], unsigned char V
     YUV2RGB(YuvY, U, V, r, g, b);
 }
 
+void RGB2YCbCr(unsigned char r[][MAX], unsigned char g[][MAX], unsigned char b[][MAX], unsigned char YCbCrY[][MAX],
+               unsigned char Cb[][MAX], unsigned char Cr[][MAX]) {
+    for (int j = 0; j < bmpIHeader.bIHeight; j++) {
+        for (int i = 0; i < bmpIHeader.bIWidth; i++) {
+            YCbCrY[j][i] = 0.299 * r[j][i] + 0.587 * g[j][i] + 0.114 * b[j][i] - 128;
+            Cb[j][i] = -0.1687 * r[j][i] - 0.3313 * g[j][i] + 0.500 * b[j][i];
+            Cr[j][i] = 0.500 * r[j][i] - 0.4187 * g[j][i] - 0.0813 * b[j][i];
+        }
+    }
+}
+
 void YUV2RGB(unsigned char YuvY[][MAX], unsigned char U[][MAX], unsigned char V[][MAX], unsigned char r[][MAX],
              unsigned char g[][MAX], unsigned char b[][MAX]) {
     for (int j = 0; j < bmpIHeader.bIHeight; j++) {
@@ -48,10 +59,10 @@ void YUV2RGB(unsigned char YuvY[][MAX], unsigned char U[][MAX], unsigned char V[
 
 void YUV2Binarization(unsigned char YuvY[][MAX], unsigned char U[][MAX], unsigned char V[][MAX], unsigned char r[][MAX],
                       unsigned char g[][MAX], unsigned char b[][MAX]) {
-    //OTSU althrithm '大津算法'
-    unsigned char T = 0, perfect_T = 0;//Threshold
+    //OTSU algorithm
+    unsigned char T = 0, perfect_T = 0; //Threshold
     double w0, w1, u0, u1, u;//paramenter
-    long number_below_T = 0L, number_above_T = 0L;//paramenter
+    long number_below_T = 0L, number_above_T = 0L; // Parameter
     double gt[255] = {0.0}, max_g = 0.0;//result;
 
     for (int num = 0; num <= 255; num++, T++) {
@@ -73,18 +84,18 @@ void YUV2Binarization(unsigned char YuvY[][MAX], unsigned char U[][MAX], unsigne
         if (number_below_T == 0 || number_above_T == 0) continue;
         u0 = (double) all_below_T / number_below_T;
         u1 = (double) all_above_T / number_above_T;
-        /*Step2*/
+        /* Step 2 */
         w0 = (double) number_below_T / (bmpIHeader.bIHeight * bmpIHeader.bIWidth);
         w1 = (double) number_above_T / (bmpIHeader.bIHeight * bmpIHeader.bIWidth);
         u = w0 * u0 + w1 * u1;
         gt[num] = w0 * pow(abs(u0 - u), 2.0) + w1 * pow(abs(u1 - u), 2.0);
-        /*Step 3 find max g*/
+        /* Step 3 find max G */
         if (gt[num] > max_g) {
             max_g = gt[num];
             perfect_T = T;
         }
     }
-    //'用算出来的perfect_T解出二值图'
+    // '用算出来的 perfect_T 解出二值图'
     for (int j = 0; j < bmpIHeader.bIHeight; j++) {
         for (int i = 0; i < bmpIHeader.bIWidth; i++) {
             if (YuvY[j][i] < perfect_T)

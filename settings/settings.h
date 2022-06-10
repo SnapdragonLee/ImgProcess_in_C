@@ -69,7 +69,6 @@ extern unsigned char records[MAX][MAX];
 extern unsigned char gray[MAX][MAX];
 
 extern char *SourceFile_Path, *OutputFile_Path;
-extern const char *OutputFile_Down;
 extern const char *BmpBoard;
 
 #endif //IMGPROCESS_IN_C_SETTINGS_H

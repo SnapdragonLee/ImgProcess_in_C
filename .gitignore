@@ -1,4 +1,4 @@
 .idea/
 cmake-build*/
 *__pycache__/
-lena2-output.bmp
+lena2-output.*

@@ -10,6 +10,7 @@
 #include <string.h>
 
 #include "fileIO/bmpIO.h"
+#include "fileIO/jpegIO.h"
 #include "processAPI/processAPI.h"
 #include "settings/settings.h"
 #include "base/tf.h"
