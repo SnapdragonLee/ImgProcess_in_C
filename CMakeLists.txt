@@ -9,7 +9,7 @@ aux_source_directory(fileIO IO)
 aux_source_directory(settings ST)
 aux_source_directory(base BS)
 
-add_executable(ImgProcess_in_C main.c header.h ${P} ${IO} ${ST} ${BS} fileIO/jpegIO.h)
+add_executable(ImgProcess_in_C main.c header.h ${P} ${IO} ${ST} ${BS})
 
 IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
     set(CURRENT_SYSTEM Linux)
